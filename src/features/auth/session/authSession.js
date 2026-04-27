@@ -55,6 +55,42 @@ export function getAccessToken() {
   return readSession()?.accessToken ?? null
 }
 
+function decodeJwtPayload(token) {
+  if (!token) {
+    return null
+  }
+
+  const parts = token.split('.')
+
+  if (parts.length < 2) {
+    return null
+  }
+
+  try {
+    const normalized = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+    const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=')
+    return JSON.parse(atob(padded))
+  } catch {
+    return null
+  }
+}
+
+export function getAccessTokenPayload() {
+  return decodeJwtPayload(getAccessToken())
+}
+
+export function getCurrentUserId() {
+  const payload = getAccessTokenPayload()
+  const subject = payload?.sub
+
+  if (!subject) {
+    return null
+  }
+
+  const userId = Number(subject)
+  return Number.isFinite(userId) ? userId : null
+}
+
 export function getRefreshToken() {
   return readSession()?.refreshToken ?? null
 }

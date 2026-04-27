@@ -22,7 +22,7 @@ export function LoginPage() {
     try {
       const response = await loginUser({ email: email.trim(), password })
       setSuccessMessage(response.message || 'Login successful')
-      navigate('/', { replace: true })
+      navigate('/iotroot/dashboard', { replace: true })
     } catch (error) {
       setErrorMessage(error.message || 'Unable to login. Please try again.')
     } finally {
