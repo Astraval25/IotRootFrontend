@@ -12,6 +12,7 @@ import {
 } from '../api/deviceApi'
 import { API_BASE_URL } from '../../../shared/config/env'
 import { getAccessToken } from '../../auth/session/authSession'
+import { openDashboardSocket } from '../realtime/dashboardSocket'
 
 const initialForm = {
   username: '',
@@ -120,75 +121,27 @@ export function DashboardDevicesPage() {
       return undefined
     }
 
-    let refreshTimerId = null
-    const wsUrl = buildStatusWsUrl(API_BASE_URL, token)
-    const socket = new WebSocket(wsUrl)
-
-    async function refreshUsage(deviceId) {
-      if (!deviceId) {
-        return
-      }
-
-      setIsLoadingUsage(true)
-
-      try {
-        const [summaryResponse, bucketsResponse] = await Promise.all([
-          fetchDeviceUsageSummary(deviceId),
-          fetchDeviceUsageBuckets(deviceId),
-        ])
-
-        setSelectedDeviceUsageSummary(summaryResponse.data ?? null)
-        setSelectedDeviceUsageBuckets(bucketsResponse.data ?? [])
-        setLastUsageUpdatedAt(new Date().toISOString())
-      } catch {
-        // Keep last known usage values on transient refresh failures.
-      } finally {
-        setIsLoadingUsage(false)
-      }
-    }
-
-    socket.onopen = () => {
-      setStatusStream('connected')
-    }
-
-    socket.onclose = () => {
-      setStatusStream('disconnected')
-    }
-
-    socket.onerror = () => {
-      setStatusStream('error')
-    }
-
-    socket.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data)
-        if (payload?.event !== 'device_status_snapshot' || !Array.isArray(payload?.data)) {
+    return openDashboardSocket({
+      token,
+      onStatusChange: setStatusStream,
+      onEvent: (payload) => {
+        if (payload?.event === 'device_status_snapshot' && Array.isArray(payload?.data)) {
+          const byDeviceId = Object.fromEntries(payload.data.map((row) => [String(row.deviceId), row]))
+          setDeviceStatuses(byDeviceId)
           return
         }
 
-        const byDeviceId = Object.fromEntries(payload.data.map((row) => [String(row.deviceId), row]))
-        setDeviceStatuses(byDeviceId)
-
-        if (refreshTimerId) {
-          window.clearTimeout(refreshTimerId)
+        if (
+          payload?.event === 'device_usage_snapshot' &&
+          payload?.data &&
+          String(payload.data.deviceId) === String(selectedDeviceId)
+        ) {
+          setSelectedDeviceUsageSummary(payload.data.deviceSummary ?? null)
+          setSelectedDeviceUsageBuckets(payload.data.recentBuckets ?? [])
+          setLastUsageUpdatedAt(new Date().toISOString())
         }
-
-        refreshTimerId = window.setTimeout(() => {
-          if (selectedDeviceId) {
-            refreshUsage(selectedDeviceId)
-          }
-        }, 300)
-      } catch {
-        // Ignore malformed websocket payloads.
-      }
-    }
-
-    return () => {
-      if (refreshTimerId) {
-        window.clearTimeout(refreshTimerId)
-      }
-      socket.close()
-    }
+      },
+    })
   }, [selectedDeviceId])
 
   useEffect(() => {
@@ -431,7 +384,7 @@ export function DashboardDevicesPage() {
         >
           {statusStream}
         </span>
-        {lastUsageUpdatedAt ? ` • Usage updated ${formatRelativeTime(lastUsageUpdatedAt)}` : ''}
+        {lastUsageUpdatedAt ? ` | Usage updated ${formatRelativeTime(lastUsageUpdatedAt)}` : ''}
       </p>
 
       <div className="dashboard-grid dashboard-grid-devices">
@@ -890,22 +843,6 @@ export function DashboardDevicesPage() {
       </article>
     </section>
   )
-}
-
-function buildStatusWsUrl(apiBaseUrl, token) {
-  let resolvedUrl
-
-  try {
-    resolvedUrl = new URL(apiBaseUrl)
-  } catch {
-    resolvedUrl = new URL(window.location.origin)
-  }
-
-  const wsProtocol = resolvedUrl.protocol === 'https:' ? 'wss:' : 'ws:'
-  const basePath = resolvedUrl.pathname.endsWith('/') ? resolvedUrl.pathname.slice(0, -1) : resolvedUrl.pathname
-  const wsPath = `${basePath}/ws/device-status`.replace(/\/{2,}/g, '/')
-
-  return `${wsProtocol}//${resolvedUrl.host}${wsPath}?token=${encodeURIComponent(token)}`
 }
 
 function formatBytes(value) {

@@ -5,8 +5,8 @@ import {
   fetchDevices,
   fetchUserUsageSummary,
 } from '../api/deviceApi'
-import { API_BASE_URL } from '../../../shared/config/env'
 import { getAccessToken } from '../../auth/session/authSession'
+import { openDashboardSocket } from '../realtime/dashboardSocket'
 
 export function DashboardOverviewPage() {
   const [devices, setDevices] = useState([])
@@ -62,70 +62,22 @@ export function DashboardOverviewPage() {
       return undefined
     }
 
-    let isDisposed = false
-    let refreshTimerId = null
-    const socket = new WebSocket(buildStatusWsUrl(API_BASE_URL, token))
-
-    async function refreshOverview() {
-      try {
-        const [devicesResponse, usageResponse] = await Promise.all([
-          fetchDevices(),
-          fetchUserUsageSummary(),
-        ])
-
-        if (isDisposed) {
+    return openDashboardSocket({
+      token,
+      onStatusChange: setStatusStream,
+      onEvent: (payload) => {
+        if (payload?.event === 'device_status_snapshot' && Array.isArray(payload?.data)) {
+          setDeviceStatuses(Object.fromEntries(payload.data.map((row) => [String(row.deviceId), row])))
+          setLastUpdatedAt(new Date().toISOString())
           return
         }
 
-        setDevices(devicesResponse.data ?? [])
-        setUsageSummary(usageResponse.data ?? null)
-        setLastUpdatedAt(new Date().toISOString())
-      } catch {
-        // Keep the live stream running even if one refresh fails.
-      }
-    }
-
-    socket.onopen = () => {
-      setStatusStream('connected')
-    }
-
-    socket.onclose = () => {
-      setStatusStream('disconnected')
-    }
-
-    socket.onerror = () => {
-      setStatusStream('error')
-    }
-
-    socket.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data)
-        if (payload?.event !== 'device_status_snapshot' || !Array.isArray(payload?.data)) {
-          return
+        if (payload?.event === 'usage_overview_snapshot' && payload?.data) {
+          setUsageSummary(payload.data)
+          setLastUpdatedAt(new Date().toISOString())
         }
-
-        setDeviceStatuses(Object.fromEntries(payload.data.map((row) => [String(row.deviceId), row])))
-        setLastUpdatedAt(new Date().toISOString())
-
-        if (refreshTimerId) {
-          window.clearTimeout(refreshTimerId)
-        }
-
-        refreshTimerId = window.setTimeout(() => {
-          refreshOverview()
-        }, 300)
-      } catch {
-        // Ignore malformed websocket payloads.
-      }
-    }
-
-    return () => {
-      isDisposed = true
-      if (refreshTimerId) {
-        window.clearTimeout(refreshTimerId)
-      }
-      socket.close()
-    }
+      },
+    })
   }, [])
 
   const connectedDevices = useMemo(
@@ -143,6 +95,8 @@ export function DashboardOverviewPage() {
   const streamLabel =
     statusStream === 'connected'
       ? 'Live'
+      : statusStream === 'reconnecting'
+        ? 'Reconnecting'
       : statusStream === 'connecting'
         ? 'Connecting'
         : statusStream
@@ -297,22 +251,6 @@ export function DashboardOverviewPage() {
       </div>
     </section>
   )
-}
-
-function buildStatusWsUrl(apiBaseUrl, token) {
-  let resolvedUrl
-
-  try {
-    resolvedUrl = new URL(apiBaseUrl)
-  } catch {
-    resolvedUrl = new URL(window.location.origin)
-  }
-
-  const wsProtocol = resolvedUrl.protocol === 'https:' ? 'wss:' : 'ws:'
-  const basePath = resolvedUrl.pathname.endsWith('/') ? resolvedUrl.pathname.slice(0, -1) : resolvedUrl.pathname
-  const wsPath = `${basePath}/ws/device-status`.replace(/\/{2,}/g, '/')
-
-  return `${wsProtocol}//${resolvedUrl.host}${wsPath}?token=${encodeURIComponent(token)}`
 }
 
 function calculatePercent(value, total) {
