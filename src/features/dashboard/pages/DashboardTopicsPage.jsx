@@ -74,7 +74,6 @@ export function DashboardTopicsPage() {
 
   useEffect(() => {
     if (!selectedDeviceId) {
-      setRules([])
       return
     }
 

@@ -15,6 +15,13 @@ export function DashboardLayout() {
         <p className="dashboard-brand">IotRoot</p>
         <nav className="dashboard-nav">
           <NavLink
+            to="/iotroot/dashboard"
+            end
+            className={({ isActive }) => (isActive ? 'dashboard-nav-link active' : 'dashboard-nav-link')}
+          >
+            Dashboard
+          </NavLink>
+          <NavLink
             to="/iotroot/dashboard/devices"
             className={({ isActive }) => (isActive ? 'dashboard-nav-link active' : 'dashboard-nav-link')}
           >

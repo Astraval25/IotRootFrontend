@@ -7,6 +7,7 @@ import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
 import { VerifyOtpPage } from '../features/auth/pages/VerifyOtpPage'
 import { DashboardLayout } from '../features/dashboard/components/DashboardLayout'
 import { DashboardDevicesPage } from '../features/dashboard/pages/DashboardDevicesPage'
+import { DashboardOverviewPage } from '../features/dashboard/pages/DashboardOverviewPage'
 import { DashboardTopicsPage } from '../features/dashboard/pages/DashboardTopicsPage'
 import { WaitlistPage } from '../features/waitlist/pages/WaitlistPage'
 
@@ -28,10 +29,10 @@ export function AppRouter() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="devices" replace />} />
+          <Route index element={<DashboardOverviewPage />} />
           <Route path="devices" element={<DashboardDevicesPage />} />
           <Route path="topics" element={<DashboardTopicsPage />} />
-          <Route path="*" element={<Navigate to="devices" replace />} />
+          <Route path="*" element={<Navigate to="/iotroot/dashboard" replace />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

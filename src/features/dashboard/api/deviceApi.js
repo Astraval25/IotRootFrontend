@@ -8,6 +8,22 @@ export function fetchDeviceById(deviceId) {
   return apiGet(`/api/devices/${deviceId}`, { requiresAuth: true })
 }
 
+export function fetchDeviceConnectionStatus() {
+  return apiGet('/api/devices/connection-status', { requiresAuth: true })
+}
+
+export function fetchDeviceUsageSummary(deviceId) {
+  return apiGet(`/api/devices/${deviceId}/usage/summary`, { requiresAuth: true })
+}
+
+export function fetchUserUsageSummary() {
+  return apiGet('/api/devices/usage/summary', { requiresAuth: true })
+}
+
+export function fetchDeviceUsageBuckets(deviceId) {
+  return apiGet(`/api/devices/${deviceId}/usage/buckets`, { requiresAuth: true })
+}
+
 export function createDevice(payload) {
   return apiPost('/api/devices', payload, { requiresAuth: true })
 }
