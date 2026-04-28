@@ -127,24 +127,7 @@ export function DashboardOverviewPage() {
 
       {errorMessage ? <p className="dashboard-message dashboard-message-error">{errorMessage}</p> : null}
 
-      <div className="dashboard-overview-hero">
-        <div>
-          <p className="dashboard-overview-kicker">Default Dashboard</p>
-          <h3>Keep an eye on device health and message flow in one place.</h3>
-          <p className="dashboard-overview-text">
-            This page updates while the dashboard stays open, so we can spot connection changes and traffic movement without a manual refresh.
-          </p>
-        </div>
-
-        <div className="dashboard-overview-actions">
-          <Link className="dashboard-primary-button dashboard-link-button" to="/iotroot/dashboard/devices">
-            Open Devices
-          </Link>
-          <Link className="dashboard-secondary-button dashboard-link-button" to="/iotroot/dashboard/topics">
-            Open Topics
-          </Link>
-        </div>
-      </div>
+      
 
       <div className="dashboard-overview-grid">
         <article className="dashboard-card dashboard-overview-card">

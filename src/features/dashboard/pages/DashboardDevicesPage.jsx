@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
 import {
   createDevice,
+  createDeviceRule,
   deleteDevice,
+  deleteDeviceRule,
   fetchDeviceById,
-  fetchDeviceUsageBuckets,
-  fetchDeviceUsageSummary,
   fetchDeviceConnectionStatus,
   fetchDeviceRules,
   fetchDevices,
+  fetchDeviceUsageBuckets,
+  fetchDeviceUsageSummary,
   updateDevice,
+  updateDeviceRule,
 } from '../api/deviceApi'
 import { API_BASE_URL } from '../../../shared/config/env'
-import { getAccessToken } from '../../auth/session/authSession'
+import { getAccessToken, getCurrentUserId } from '../../auth/session/authSession'
 import { openDashboardSocket } from '../realtime/dashboardSocket'
 
 const initialForm = {
@@ -20,15 +23,37 @@ const initialForm = {
   mountpoint: '',
 }
 
+const initialRuleForm = {
+  topic: '',
+  permission: 'publish',
+}
+
+const permissions = ['publish', 'subscribe', 'readwrite']
+
+function normalizeTopicInput(topic) {
+  return topic.trim().replace(/^\/+/, '')
+}
+
+function getTopicPrefix(userId) {
+  return userId ? `/iot/${userId}/` : '/iot/user_id/'
+}
+
+function stripTopicPrefix(topic, userId) {
+  const prefix = getTopicPrefix(userId)
+  return topic?.startsWith(prefix) ? topic.slice(prefix.length) : topic ?? ''
+}
+
 export function DashboardDevicesPage() {
   const [devices, setDevices] = useState([])
   const [form, setForm] = useState(initialForm)
+  const [ruleForm, setRuleForm] = useState(initialRuleForm)
   const [selectedDeviceId, setSelectedDeviceId] = useState('')
   const [selectedDeviceRules, setSelectedDeviceRules] = useState([])
   const [selectedDeviceUsageSummary, setSelectedDeviceUsageSummary] = useState(null)
   const [selectedDeviceUsageBuckets, setSelectedDeviceUsageBuckets] = useState([])
   const [deviceStatuses, setDeviceStatuses] = useState({})
   const [editingId, setEditingId] = useState(null)
+  const [editingRuleId, setEditingRuleId] = useState(null)
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -36,9 +61,12 @@ export function DashboardDevicesPage() {
   const [isLoadingUsage, setIsLoadingUsage] = useState(false)
   const [isLoadingStatus, setIsLoadingStatus] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmittingRule, setIsSubmittingRule] = useState(false)
   const [copiedKey, setCopiedKey] = useState('')
   const [statusStream, setStatusStream] = useState('connecting')
   const [lastUsageUpdatedAt, setLastUsageUpdatedAt] = useState('')
+  const userId = getCurrentUserId()
+  const topicPrefix = getTopicPrefix(userId)
 
   async function loadDevices(showLoader = false) {
     if (showLoader) {
@@ -75,6 +103,25 @@ export function DashboardDevicesPage() {
       setErrorMessage(error.message || 'Failed to load connection status.')
     } finally {
       setIsLoadingStatus(false)
+    }
+  }
+
+  async function reloadRules() {
+    if (!selectedDeviceId) {
+      setSelectedDeviceRules([])
+      return
+    }
+
+    setIsLoadingRules(true)
+
+    try {
+      const response = await fetchDeviceRules(selectedDeviceId)
+      setSelectedDeviceRules(response.data ?? [])
+    } catch (error) {
+      setErrorMessage(error.message || 'Failed to load rules.')
+      setSelectedDeviceRules([])
+    } finally {
+      setIsLoadingRules(false)
     }
   }
 
@@ -219,9 +266,18 @@ export function DashboardDevicesPage() {
     setForm((previous) => ({ ...previous, [key]: value }))
   }
 
+  function updateRuleForm(key, value) {
+    setRuleForm((previous) => ({ ...previous, [key]: value }))
+  }
+
   function resetForm() {
     setForm(initialForm)
     setEditingId(null)
+  }
+
+  function resetRuleForm() {
+    setRuleForm(initialRuleForm)
+    setEditingRuleId(null)
   }
 
   async function handleSubmit(event) {
@@ -255,6 +311,47 @@ export function DashboardDevicesPage() {
     }
   }
 
+  async function handleRuleSubmit(event) {
+    event.preventDefault()
+    setMessage('')
+    setErrorMessage('')
+
+    if (!selectedDeviceId) {
+      setErrorMessage('Select a device before managing topic rules.')
+      return
+    }
+
+    const topic = normalizeTopicInput(ruleForm.topic)
+    if (!topic) {
+      setErrorMessage('Topic suffix is required.')
+      return
+    }
+
+    setIsSubmittingRule(true)
+
+    try {
+      const payload = {
+        topic,
+        permission: ruleForm.permission,
+      }
+
+      if (editingRuleId) {
+        const response = await updateDeviceRule(selectedDeviceId, editingRuleId, payload)
+        setMessage(response.message || 'Access rule updated.')
+      } else {
+        const response = await createDeviceRule(selectedDeviceId, payload)
+        setMessage(response.message || 'Access rule added.')
+      }
+
+      resetRuleForm()
+      await reloadRules()
+    } catch (error) {
+      setErrorMessage(error.message || 'Failed to save access rule.')
+    } finally {
+      setIsSubmittingRule(false)
+    }
+  }
+
   async function handleEdit(deviceId) {
     setMessage('')
     setErrorMessage('')
@@ -274,6 +371,16 @@ export function DashboardDevicesPage() {
     }
   }
 
+  function handleRuleEdit(rule) {
+    setMessage('')
+    setErrorMessage('')
+    setEditingRuleId(rule.id)
+    setRuleForm({
+      topic: stripTopicPrefix(rule.topic, userId),
+      permission: rule.permission || 'publish',
+    })
+  }
+
   async function handleDelete(deviceId) {
     setMessage('')
     setErrorMessage('')
@@ -290,6 +397,28 @@ export function DashboardDevicesPage() {
       await loadConnectionStatuses()
     } catch (error) {
       setErrorMessage(error.message || 'Failed to delete device.')
+    }
+  }
+
+  async function handleRuleDelete(ruleId) {
+    if (!selectedDeviceId) {
+      return
+    }
+
+    setMessage('')
+    setErrorMessage('')
+
+    try {
+      const response = await deleteDeviceRule(selectedDeviceId, ruleId)
+      setMessage(response.message || 'Access rule deleted.')
+
+      if (editingRuleId === ruleId) {
+        resetRuleForm()
+      }
+
+      await reloadRules()
+    } catch (error) {
+      setErrorMessage(error.message || 'Failed to delete access rule.')
     }
   }
 
@@ -356,10 +485,20 @@ export function DashboardDevicesPage() {
 
   return (
     <section className="dashboard-section">
+      <section className="dashboard-overview-hero dashboard-operations-hero">
+        <div>
+          <p className="dashboard-overview-kicker">Operations Workspace</p>
+          <h3>Manage device identity, topic permissions, broker testing, and usage in one place.</h3>
+          <p className="dashboard-overview-text">
+            Operators can move from provisioning and ACL updates to live validation without switching between separate pages.
+          </p>
+        </div>
+      </section>
+
       <header className="dashboard-section-header">
         <div>
-          <h2>Device Management</h2>
-          <p>Manage connected device credentials and identifiers for your IoT platform.</p>
+          <h2>Devices and Topics</h2>
+          <p>Operate credentials, live sessions, ACL rules, and telemetry usage from a single workspace.</p>
         </div>
 
         <button
@@ -373,6 +512,7 @@ export function DashboardDevicesPage() {
           Refresh
         </button>
       </header>
+
       <p className="dashboard-muted">
         Status Stream:{' '}
         <span
@@ -389,7 +529,7 @@ export function DashboardDevicesPage() {
 
       <div className="dashboard-grid dashboard-grid-devices">
         <article className="dashboard-card">
-          <h3>{editingId ? `Edit Device #${editingId}` : 'Create Device'}</h3>
+          <h3>{editingId ? `Edit Device #${editingId}` : 'Create Device Profile'}</h3>
           <form className="dashboard-form" onSubmit={handleSubmit}>
             <label htmlFor="device-username">
               Username
@@ -447,7 +587,7 @@ export function DashboardDevicesPage() {
         </article>
 
         <article className="dashboard-card">
-          <h3>Devices</h3>
+          <h3>Device Inventory</h3>
           {isLoading ? (
             <p className="dashboard-muted">Loading devices...</p>
           ) : devices.length === 0 ? (
@@ -491,7 +631,12 @@ export function DashboardDevicesPage() {
                         <button
                           type="button"
                           className="dashboard-inline-action"
-                          onClick={() => setSelectedDeviceId(String(device.id))}
+                          onClick={() => {
+                            setSelectedDeviceId(String(device.id))
+                            setMessage('')
+                            setErrorMessage('')
+                            resetRuleForm()
+                          }}
                         >
                           {String(device.id) === String(selectedDeviceId) ? 'Selected' : 'Use'}
                         </button>
@@ -519,24 +664,20 @@ export function DashboardDevicesPage() {
         <header className="dashboard-details-header">
           <div>
             <h3>Connection Details</h3>
-            <p>Use these details with Mosquitto CLI to test publish/subscribe against ACL permissions.</p>
+            <p>Use these details with Mosquitto CLI to test publish and subscribe flows against the selected device permissions.</p>
           </div>
           <span className="dashboard-details-badge">{selectedDevice ? `Device #${selectedDevice.id}` : 'No device'}</span>
         </header>
 
         {!selectedDevice ? (
-          <p className="dashboard-muted">Select a device from the table to generate commands.</p>
+          <p className="dashboard-muted">Select a device from the inventory to manage rules and generate commands.</p>
         ) : (
           <>
             <div className="dashboard-details-grid">
               <div className="dashboard-detail-item">
                 <span>URL</span>
                 <strong>{brokerUrl}</strong>
-                <button
-                  type="button"
-                  className="dashboard-inline-action"
-                  onClick={() => copyText('url', brokerUrl)}
-                >
+                <button type="button" className="dashboard-inline-action" onClick={() => copyText('url', brokerUrl)}>
                   {copiedKey === 'url' ? 'Copied' : 'Copy'}
                 </button>
               </div>
@@ -547,22 +688,14 @@ export function DashboardDevicesPage() {
               <div className="dashboard-detail-item">
                 <span>Host</span>
                 <strong>{brokerHost}</strong>
-                <button
-                  type="button"
-                  className="dashboard-inline-action"
-                  onClick={() => copyText('host', brokerHost)}
-                >
+                <button type="button" className="dashboard-inline-action" onClick={() => copyText('host', brokerHost)}>
                   {copiedKey === 'host' ? 'Copied' : 'Copy'}
                 </button>
               </div>
               <div className="dashboard-detail-item">
                 <span>Port</span>
                 <strong>{brokerPort}</strong>
-                <button
-                  type="button"
-                  className="dashboard-inline-action"
-                  onClick={() => copyText('port', brokerPort)}
-                >
+                <button type="button" className="dashboard-inline-action" onClick={() => copyText('port', brokerPort)}>
                   {copiedKey === 'port' ? 'Copied' : 'Copy'}
                 </button>
               </div>
@@ -587,50 +720,120 @@ export function DashboardDevicesPage() {
                 <div className="dashboard-table-wrap">
                   <table className="dashboard-table">
                     <tbody>
-                      <tr>
-                        <th>Status Source</th>
-                        <td>{selectedDeviceStatus?.statusSource || '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Node</th>
-                        <td>{selectedDeviceStatus?.node || '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Peer Host</th>
-                        <td>{selectedDeviceStatus?.peerHost || '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Peer Port</th>
-                        <td>{selectedDeviceStatus?.peerPort || '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Protocol</th>
-                        <td>{selectedDeviceStatus?.protocol || '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Keep Alive</th>
-                        <td>{selectedDeviceStatus?.keepAlive || '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Session Expiry</th>
-                        <td>{selectedDeviceStatus?.sessionExpiryInterval || '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Connected At</th>
-                        <td>{selectedDeviceStatus?.connectedAt || '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Disconnected At</th>
-                        <td>{selectedDeviceStatus?.disconnectedAt || '-'}</td>
-                      </tr>
-                      <tr>
-                        <th>Reason</th>
-                        <td>{selectedDeviceStatus?.reason || '-'}</td>
-                      </tr>
+                      <tr><th>Status Source</th><td>{selectedDeviceStatus?.statusSource || '-'}</td></tr>
+                      <tr><th>Node</th><td>{selectedDeviceStatus?.node || '-'}</td></tr>
+                      <tr><th>Peer Host</th><td>{selectedDeviceStatus?.peerHost || '-'}</td></tr>
+                      <tr><th>Peer Port</th><td>{selectedDeviceStatus?.peerPort || '-'}</td></tr>
+                      <tr><th>Protocol</th><td>{selectedDeviceStatus?.protocol || '-'}</td></tr>
+                      <tr><th>Keep Alive</th><td>{selectedDeviceStatus?.keepAlive || '-'}</td></tr>
+                      <tr><th>Session Expiry</th><td>{selectedDeviceStatus?.sessionExpiryInterval || '-'}</td></tr>
+                      <tr><th>Connected At</th><td>{selectedDeviceStatus?.connectedAt || '-'}</td></tr>
+                      <tr><th>Disconnected At</th><td>{selectedDeviceStatus?.disconnectedAt || '-'}</td></tr>
+                      <tr><th>Reason</th><td>{selectedDeviceStatus?.reason || '-'}</td></tr>
                     </tbody>
                   </table>
                 </div>
               )}
+            </section>
+
+            <section className="dashboard-rules-section">
+              <div className="dashboard-rules-header">
+                <div>
+                  <h4>Topic Access Rules</h4>
+                  <p className="dashboard-muted">Manage ACL rules here instead of switching to a separate topic page.</p>
+                </div>
+              </div>
+
+              <div className="dashboard-unified-rules-grid">
+                <article className="dashboard-card dashboard-subcard">
+                  <h5>{editingRuleId ? `Edit Rule #${editingRuleId}` : 'Add Access Rule'}</h5>
+                  <form className="dashboard-form dashboard-subcard-form" onSubmit={handleRuleSubmit}>
+                    <label htmlFor="rule-permission">
+                      Permission
+                      <select
+                        id="rule-permission"
+                        value={ruleForm.permission}
+                        onChange={(event) => updateRuleForm('permission', event.target.value)}
+                      >
+                        {permissions.map((permission) => (
+                          <option key={permission} value={permission}>
+                            {permission}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label htmlFor="rule-topic">
+                      Topic
+                      <div className="dashboard-topic-input">
+                        <span className="dashboard-topic-prefix">{topicPrefix}</span>
+                        <input
+                          id="rule-topic"
+                          value={ruleForm.topic}
+                          onChange={(event) => updateRuleForm('topic', event.target.value)}
+                          placeholder="sensors/+/status"
+                          required
+                        />
+                      </div>
+                    </label>
+
+                    <p className="dashboard-topic-helper">Enter only the topic suffix after the fixed account path.</p>
+
+                    <div className="dashboard-form-actions">
+                      <button className="dashboard-primary-button" type="submit" disabled={isSubmittingRule}>
+                        {isSubmittingRule ? 'Saving...' : editingRuleId ? 'Update Rule' : 'Add Rule'}
+                      </button>
+                      {editingRuleId ? (
+                        <button
+                          className="dashboard-secondary-button"
+                          type="button"
+                          onClick={resetRuleForm}
+                          disabled={isSubmittingRule}
+                        >
+                          Cancel Edit
+                        </button>
+                      ) : null}
+                    </div>
+                  </form>
+                </article>
+
+                <article className="dashboard-card dashboard-subcard">
+                  <h5>Assigned Rules</h5>
+                  {isLoadingRules ? (
+                    <p className="dashboard-muted dashboard-subcard-body">Loading rules...</p>
+                  ) : selectedDeviceRules.length === 0 ? (
+                    <p className="dashboard-muted dashboard-subcard-body">No ACL rules found for this device.</p>
+                  ) : (
+                    <div className="dashboard-table-wrap dashboard-subcard-body">
+                      <table className="dashboard-table">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Permission</th>
+                            <th>Topic</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedDeviceRules.map((rule) => (
+                            <tr key={rule.id}>
+                              <td>{rule.id}</td>
+                              <td>{rule.permission}</td>
+                              <td className="dashboard-truncate">{rule.topic}</td>
+                              <td>
+                                <div className="dashboard-row-actions">
+                                  <button type="button" onClick={() => handleRuleEdit(rule)}>Edit</button>
+                                  <button type="button" onClick={() => handleRuleDelete(rule.id)}>Delete</button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </article>
+              </div>
             </section>
 
             <div className="dashboard-cli-grid">
@@ -643,11 +846,7 @@ export function DashboardDevicesPage() {
                   </p>
                 </header>
                 <code className="dashboard-cli-block">{publishCommand}</code>
-                <button
-                  type="button"
-                  className="dashboard-secondary-button"
-                  onClick={() => copyText('publish', publishCommand)}
-                >
+                <button type="button" className="dashboard-secondary-button" onClick={() => copyText('publish', publishCommand)}>
                   {copiedKey === 'publish' ? 'Copied' : 'Copy Publish Command'}
                 </button>
               </section>
@@ -657,17 +856,11 @@ export function DashboardDevicesPage() {
                   <h4>Subscribe Command</h4>
                   <p>
                     Permission source:{' '}
-                    {subscribeAllowed.length > 0
-                      ? 'subscribe/readwrite rule found'
-                      : 'fallback topic (no subscribe rule)'}
+                    {subscribeAllowed.length > 0 ? 'subscribe/readwrite rule found' : 'fallback topic (no subscribe rule)'}
                   </p>
                 </header>
                 <code className="dashboard-cli-block">{subscribeCommand}</code>
-                <button
-                  type="button"
-                  className="dashboard-secondary-button"
-                  onClick={() => copyText('subscribe', subscribeCommand)}
-                >
+                <button type="button" className="dashboard-secondary-button" onClick={() => copyText('subscribe', subscribeCommand)}>
                   {copiedKey === 'subscribe' ? 'Copied' : 'Copy Subscribe Command'}
                 </button>
               </section>
@@ -700,9 +893,7 @@ export function DashboardDevicesPage() {
                     <article className="dashboard-usage-stat">
                       <span>Top Topic</span>
                       <strong className="dashboard-usage-compact">{busiestTopic}</strong>
-                      <small>
-                        {busiestBucket ? formatBytes(busiestBucket.estimatedTotalBytes ?? 0) : 'No bucket data'}
-                      </small>
+                      <small>{busiestBucket ? formatBytes(busiestBucket.estimatedTotalBytes ?? 0) : 'No bucket data'}</small>
                     </article>
                   </div>
 
@@ -740,18 +931,9 @@ export function DashboardDevicesPage() {
                       </header>
 
                       <div className="dashboard-usage-kpis">
-                        <div>
-                          <span>Payload Bytes</span>
-                          <strong>{formatBytes(totalPayloadBytes)}</strong>
-                        </div>
-                        <div>
-                          <span>Estimated Overhead</span>
-                          <strong>{formatBytes(Math.max(totalEstimatedBytes - totalPayloadBytes, 0))}</strong>
-                        </div>
-                        <div>
-                          <span>Activity Window</span>
-                          <strong>24 hours</strong>
-                        </div>
+                        <div><span>Payload Bytes</span><strong>{formatBytes(totalPayloadBytes)}</strong></div>
+                        <div><span>Estimated Overhead</span><strong>{formatBytes(Math.max(totalEstimatedBytes - totalPayloadBytes, 0))}</strong></div>
+                        <div><span>Activity Window</span><strong>24 hours</strong></div>
                       </div>
                     </section>
                   </div>
@@ -805,36 +987,6 @@ export function DashboardDevicesPage() {
                       </article>
                     )
                   })}
-                </div>
-              )}
-            </section>
-
-            <section className="dashboard-rules-section">
-              <h4>Device ACL Rules</h4>
-              {isLoadingRules ? (
-                <p className="dashboard-muted">Loading rules...</p>
-              ) : selectedDeviceRules.length === 0 ? (
-                <p className="dashboard-muted">No ACL rules found for this device.</p>
-              ) : (
-                <div className="dashboard-table-wrap">
-                  <table className="dashboard-table">
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>Permission</th>
-                        <th>Topic</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedDeviceRules.map((rule) => (
-                        <tr key={rule.id}>
-                          <td>{rule.id}</td>
-                          <td>{rule.permission}</td>
-                          <td className="dashboard-truncate">{rule.topic}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
                 </div>
               )}
             </section>

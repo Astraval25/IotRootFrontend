@@ -34,8 +34,13 @@ export function ForgotPasswordPage() {
 
   return (
     <AuthLayout
-      title="Forgot Password"
-      subtitle="Request an OTP to reset your account password."
+      title="Recover your account"
+      subtitle="Request a reset code and continue restoring access without losing your setup."
+      highlights={[
+        'Recovery flow aligned with verification policy',
+        'Works with existing workspace identity',
+        'Fast path back into the operations dashboard',
+      ]}
       footerLinks={[
         { to: '/login', label: 'Back to login' },
         { to: '/register', label: 'Create account' },

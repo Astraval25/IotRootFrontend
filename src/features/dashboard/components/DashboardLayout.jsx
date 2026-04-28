@@ -25,13 +25,7 @@ export function DashboardLayout() {
             to="/iotroot/dashboard/devices"
             className={({ isActive }) => (isActive ? 'dashboard-nav-link active' : 'dashboard-nav-link')}
           >
-            Devices
-          </NavLink>
-          <NavLink
-            to="/iotroot/dashboard/topics"
-            className={({ isActive }) => (isActive ? 'dashboard-nav-link active' : 'dashboard-nav-link')}
-          >
-            Topics
+            Operations
           </NavLink>
         </nav>
 
@@ -42,16 +36,16 @@ export function DashboardLayout() {
 
       <section className="dashboard-main">
         <header className="dashboard-topbar">
-          <h1>IoT Platform Dashboard</h1>
+          <h1>IotRoot Operations</h1>
           <div className="dashboard-top-actions">
             <button type="button" className="dashboard-chip">
-              Profile
+              Workspace
             </button>
             <button type="button" className="dashboard-chip">
-              Notifications
+              Live Stream
             </button>
             <button type="button" className="dashboard-chip">
-              Plan
+              Broker
             </button>
           </div>
         </header>

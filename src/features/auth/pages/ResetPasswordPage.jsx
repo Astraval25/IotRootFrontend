@@ -51,8 +51,13 @@ export function ResetPasswordPage() {
 
   return (
     <AuthLayout
-      title="Reset Password"
-      subtitle="Use your OTP and create a new password."
+      title="Reset password"
+      subtitle="Confirm the reset code and choose a new password for your workspace."
+      highlights={[
+        'OTP-protected password reset',
+        'Built for secure operator account recovery',
+        'Straight back into the live dashboard after reset',
+      ]}
       footerLinks={[
         { to: '/login', label: 'Back to login' },
         { to: '/forgot-password', label: 'Resend OTP' },

@@ -58,8 +58,13 @@ export function VerifyOtpPage() {
 
   return (
     <AuthLayout
-      title="Verify OTP"
-      subtitle="Enter the OTP sent to your email to activate your account."
+      title="Verify access"
+      subtitle="Enter the one-time passcode sent to your email to activate the workspace."
+      highlights={[
+        'Short verification before operations unlock',
+        'Resend support without leaving the flow',
+        'Secure team onboarding for production systems',
+      ]}
       footerLinks={[
         { to: '/login', label: 'Back to login' },
         { to: '/register', label: 'Need an account?' },
