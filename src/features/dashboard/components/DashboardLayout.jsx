@@ -6,7 +6,7 @@ export function DashboardLayout() {
 
   function handleLogout() {
     clearSession()
-    navigate('/login', { replace: true })
+    navigate('/iotroot/login', { replace: true })
   }
 
   return (

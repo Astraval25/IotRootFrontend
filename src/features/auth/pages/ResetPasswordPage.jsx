@@ -59,7 +59,7 @@ export function ResetPasswordPage() {
         'Straight back into the live dashboard after reset',
       ]}
       footerLinks={[
-        { to: '/login', label: 'Back to login' },
+        { to: '/iotroot/login', label: 'Back to login' },
         { to: '/forgot-password', label: 'Resend OTP' },
       ]}
     >

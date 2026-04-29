@@ -66,7 +66,7 @@ export function VerifyOtpPage() {
         'Secure team onboarding for production systems',
       ]}
       footerLinks={[
-        { to: '/login', label: 'Back to login' },
+        { to: '/iotroot/login', label: 'Back to login' },
         { to: '/register', label: 'Need an account?' },
       ]}
     >

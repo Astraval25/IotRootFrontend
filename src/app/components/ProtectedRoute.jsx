@@ -7,7 +7,7 @@ export function ProtectedRoute({ children }) {
   const isAuthenticated = Boolean(session?.accessToken || session?.refreshToken) && !isRefreshTokenExpired()
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+    return <Navigate to="/iotroot/login" replace state={{ from: location.pathname }} />
   }
 
   return children

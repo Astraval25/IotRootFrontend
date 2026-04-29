@@ -255,9 +255,9 @@ export function WaitlistPage() {
           <a href="#pricing">Pricing</a>
           <a href="#lead">Pilot</a>
         </nav>
-        <Link className="landing-nav-login" to="/login">
+        {/* <Link className="landing-nav-login" to="/iotroot/login">
           Sign in
-        </Link>
+        </Link> */}
       </header>
 
       <section className="landing-hero" id="top">

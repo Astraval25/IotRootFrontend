@@ -42,7 +42,7 @@ export function ForgotPasswordPage() {
         'Fast path back into the operations dashboard',
       ]}
       footerLinks={[
-        { to: '/login', label: 'Back to login' },
+        { to: '/iotroot/login', label: 'Back to login' },
         { to: '/register', label: 'Create account' },
       ]}
     >

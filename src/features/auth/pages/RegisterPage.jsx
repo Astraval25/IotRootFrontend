@@ -47,7 +47,7 @@ export function RegisterPage() {
         'Fast handoff into live device operations',
       ]}
       footerLinks={[
-        { to: '/login', label: 'Already have an account? Sign in' },
+        { to: '/iotroot/login', label: 'Already have an account? Sign in' },
         { to: '/', label: 'Back to waitlist' },
       ]}
     >
