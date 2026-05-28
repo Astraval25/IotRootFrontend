@@ -27,6 +27,18 @@ export function DashboardLayout() {
           >
             Operations
           </NavLink>
+          <NavLink
+            to="/iotroot/dashboard/screens"
+            className={({ isActive }) => (isActive ? 'dashboard-nav-link active' : 'dashboard-nav-link')}
+          >
+            Screens
+          </NavLink>
+          <NavLink
+            to="/iotroot/dashboard/schedules"
+            className={({ isActive }) => (isActive ? 'dashboard-nav-link active' : 'dashboard-nav-link')}
+          >
+            Schedules
+          </NavLink>
         </nav>
 
         <button className="dashboard-logout" type="button" onClick={handleLogout}>

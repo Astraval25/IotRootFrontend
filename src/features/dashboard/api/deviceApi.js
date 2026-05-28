@@ -17,7 +17,54 @@ export function fetchDeviceUsageSummary(deviceId) {
 }
 
 export function fetchUserUsageSummary() {
-  return apiGet('/api/devices/usage/summary', { requiresAuth: true })
+  return apiGet('/api/devices/usage/summary', { requiresAuth: true }).catch(async (error) => {
+    if (error?.code !== 404) {
+      throw error
+    }
+
+    // Backward-compatible fallback for deployments that do not expose
+    // the account-level usage endpoint yet.
+    const devicesResponse = await fetchDevices()
+    const devices = devicesResponse.data ?? []
+
+    if (devices.length === 0) {
+      return {
+        status: true,
+        code: 200,
+        message: 'Usage summary fetched',
+        data: buildUsageSummary(),
+      }
+    }
+
+    const perDeviceResponses = await Promise.all(
+      devices.map((device) =>
+        fetchDeviceUsageSummary(device.id).catch(() => ({
+          status: true,
+          code: 200,
+          message: 'Device usage summary unavailable',
+          data: buildUsageSummary(),
+        })),
+      ),
+    )
+
+    const aggregate = perDeviceResponses.reduce((summary, response) => {
+      const data = response?.data ?? {}
+      summary.inboundMessages += Number(data.inboundMessages ?? 0)
+      summary.outboundMessages += Number(data.outboundMessages ?? 0)
+      summary.inboundPayloadBytes += Number(data.inboundPayloadBytes ?? 0)
+      summary.outboundPayloadBytes += Number(data.outboundPayloadBytes ?? 0)
+      summary.inboundEstimatedTotalBytes += Number(data.inboundEstimatedTotalBytes ?? 0)
+      summary.outboundEstimatedTotalBytes += Number(data.outboundEstimatedTotalBytes ?? 0)
+      return summary
+    }, buildUsageSummary())
+
+    return {
+      status: true,
+      code: 200,
+      message: 'Usage summary fetched',
+      data: aggregate,
+    }
+  })
 }
 
 export function fetchDeviceUsageBuckets(deviceId) {
@@ -50,4 +97,17 @@ export function updateDeviceRule(deviceId, ruleId, payload) {
 
 export function deleteDeviceRule(deviceId, ruleId) {
   return apiDelete(`/api/devices/${deviceId}/rules/${ruleId}`, { requiresAuth: true })
+}
+
+function buildUsageSummary() {
+  return {
+    deviceId: null,
+    clientId: 'all',
+    inboundMessages: 0,
+    outboundMessages: 0,
+    inboundPayloadBytes: 0,
+    outboundPayloadBytes: 0,
+    inboundEstimatedTotalBytes: 0,
+    outboundEstimatedTotalBytes: 0,
+  }
 }

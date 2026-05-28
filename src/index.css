@@ -1596,6 +1596,70 @@ a:hover {
   background: #f4f8ff;
 }
 
+.landing-trigger-preview {
+  border: 1px solid #dce6fa;
+  border-radius: 8px;
+  padding: 0.85rem;
+  background: #f8fbff;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.landing-trigger-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.landing-trigger-head strong {
+  color: #23406a;
+  font-size: 0.84rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.landing-trigger-head small {
+  color: #5d7699;
+  font-weight: 700;
+}
+
+.landing-trigger-preview p {
+  margin: 0;
+  color: #35547e;
+  font-size: 0.84rem;
+}
+
+.landing-trigger-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem 0.8rem;
+  align-items: baseline;
+}
+
+.landing-trigger-grid span {
+  color: #60779d;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.landing-trigger-grid strong {
+  color: #1f3e67;
+  font-size: 0.83rem;
+  overflow-wrap: anywhere;
+}
+
+.landing-trigger-preview-warning {
+  border-color: #f2c783;
+  background: #fff8ed;
+}
+
+.landing-trigger-preview-critical {
+  border-color: #f0a7a7;
+  background: #fff3f3;
+}
+
 .landing-signal-bars {
   display: flex;
   align-items: end;

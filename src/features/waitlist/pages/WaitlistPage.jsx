@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 import iotrootLogo from '../../../assets/iotroot-logo.png'
 import { createLead } from '../api/leadApi'
 
@@ -88,22 +87,294 @@ const deviceGroups = [
   {
     name: 'Factory Line A',
     totalDevices: 25,
-    topics: ['factory/line-a/temperature', 'factory/line-a/motor', 'factory/line-a/power'],
     device: 'esp32-gateway-04',
+    seed: { temperature: 72, vibration: 58, power: 790 },
+    topics: [
+      {
+        key: 'temperature',
+        name: 'factory/line-a/temperature',
+        unit: 'C',
+        min: 46,
+        max: 96,
+        step: 6,
+        timerMs: 1400,
+        triggers: [
+          {
+            label: 'temperature > 88C',
+            all: [{ key: 'temperature', operator: '>', value: 88 }],
+            event: 'temperature_critical',
+            action: 'start_cooling_cycle',
+            status: 'critical',
+            timerMs: 900,
+          },
+          {
+            label: 'temperature > 78C and power > 860W',
+            all: [
+              { key: 'temperature', operator: '>', value: 78 },
+              { key: 'power', operator: '>', value: 860 },
+            ],
+            event: 'load_spike',
+            action: 'reduce_motor_speed',
+            status: 'warning',
+            timerMs: 1100,
+          },
+        ],
+      },
+      {
+        key: 'vibration',
+        name: 'factory/line-a/motor',
+        unit: 'Hz',
+        min: 20,
+        max: 92,
+        step: 8,
+        timerMs: 1500,
+        triggers: [
+          {
+            label: 'vibration > 78Hz',
+            all: [{ key: 'vibration', operator: '>', value: 78 }],
+            event: 'motor_vibration_alert',
+            action: 'schedule_maintenance',
+            status: 'warning',
+            timerMs: 1000,
+          },
+        ],
+      },
+      {
+        key: 'power',
+        name: 'factory/line-a/power',
+        unit: 'W',
+        min: 420,
+        max: 980,
+        step: 70,
+        timerMs: 1700,
+        triggers: [
+          {
+            label: 'power > 920W',
+            all: [{ key: 'power', operator: '>', value: 920 }],
+            event: 'power_peak',
+            action: 'shed_non_critical_load',
+            status: 'critical',
+            timerMs: 950,
+          },
+        ],
+      },
+    ],
   },
   {
     name: 'My Home',
     totalDevices: 12,
-    topics: ['home/living-room/light', 'home/kitchen/smoke', 'home/door-lock/status'],
     device: 'home-hub-01',
+    seed: { lightLux: 260, smokePpm: 8, doorLocked: 1 },
+    topics: [
+      {
+        key: 'lightLux',
+        name: 'home/living-room/light',
+        unit: 'lux',
+        min: 15,
+        max: 520,
+        step: 54,
+        timerMs: 1600,
+        triggers: [
+          {
+            label: 'light < 80 lux and door is unlocked',
+            all: [
+              { key: 'lightLux', operator: '<', value: 80 },
+              { key: 'doorLocked', operator: '==', value: 0 },
+            ],
+            event: 'entry_detected_low_light',
+            action: 'switch_on_entry_lights',
+            status: 'warning',
+            timerMs: 1000,
+          },
+        ],
+      },
+      {
+        key: 'smokePpm',
+        name: 'home/kitchen/smoke',
+        unit: 'ppm',
+        min: 2,
+        max: 45,
+        step: 6,
+        timerMs: 1500,
+        triggers: [
+          {
+            label: 'smoke > 28ppm',
+            all: [{ key: 'smokePpm', operator: '>', value: 28 }],
+            event: 'smoke_alert',
+            action: 'trigger_alarm_and_notify',
+            status: 'critical',
+            timerMs: 850,
+          },
+        ],
+      },
+      {
+        key: 'doorLocked',
+        name: 'home/door-lock/status',
+        unit: '',
+        min: 0,
+        max: 1,
+        step: 1,
+        timerMs: 1700,
+        discrete: true,
+        triggers: [
+          {
+            label: 'door unlocked while smoke > 20ppm',
+            all: [
+              { key: 'doorLocked', operator: '==', value: 0 },
+              { key: 'smokePpm', operator: '>', value: 20 },
+            ],
+            event: 'safety_exit_path_open',
+            action: 'unlock_all_exits',
+            status: 'warning',
+            timerMs: 950,
+          },
+        ],
+      },
+    ],
   },
   {
     name: 'Office Hall',
     totalDevices: 18,
-    topics: ['office/hall/ac', 'office/hall/people-count', 'office/hall/lights'],
     device: 'office-panel-02',
+    seed: { acTemp: 24, peopleCount: 38, lightState: 1 },
+    topics: [
+      {
+        key: 'acTemp',
+        name: 'office/hall/ac',
+        unit: 'C',
+        min: 18,
+        max: 33,
+        step: 2,
+        timerMs: 1500,
+        triggers: [
+          {
+            label: 'ac temperature > 30C and people > 55',
+            all: [
+              { key: 'acTemp', operator: '>', value: 30 },
+              { key: 'peopleCount', operator: '>', value: 55 },
+            ],
+            event: 'comfort_drop',
+            action: 'increase_ac_output',
+            status: 'warning',
+            timerMs: 1000,
+          },
+        ],
+      },
+      {
+        key: 'peopleCount',
+        name: 'office/hall/people-count',
+        unit: 'people',
+        min: 0,
+        max: 90,
+        step: 11,
+        timerMs: 1400,
+        triggers: [
+          {
+            label: 'people count > 72',
+            all: [{ key: 'peopleCount', operator: '>', value: 72 }],
+            event: 'occupancy_alert',
+            action: 'open_secondary_zone',
+            status: 'critical',
+            timerMs: 900,
+          },
+        ],
+      },
+      {
+        key: 'lightState',
+        name: 'office/hall/lights',
+        unit: '',
+        min: 0,
+        max: 1,
+        step: 1,
+        timerMs: 1700,
+        discrete: true,
+        triggers: [
+          {
+            label: 'lights off while people > 12',
+            all: [
+              { key: 'lightState', operator: '==', value: 0 },
+              { key: 'peopleCount', operator: '>', value: 12 },
+            ],
+            event: 'lighting_mismatch',
+            action: 'restore_hall_lighting',
+            status: 'warning',
+            timerMs: 1050,
+          },
+        ],
+      },
+    ],
   },
 ]
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value))
+}
+
+function randomInt(min, max) {
+  return min + Math.floor(Math.random() * (max - min + 1))
+}
+
+function formatMetric(topic, value) {
+  if (topic.key === 'doorLocked') {
+    return value === 1 ? 'locked' : 'unlocked'
+  }
+
+  if (topic.key === 'lightState') {
+    return value === 1 ? 'on' : 'off'
+  }
+
+  return `${value}${topic.unit ? ` ${topic.unit}` : ''}`
+}
+
+function evaluateCondition(currentData, condition) {
+  const left = Number(currentData[condition.key] ?? 0)
+  const right = Number(condition.value)
+
+  switch (condition.operator) {
+    case '>':
+      return left > right
+    case '>=':
+      return left >= right
+    case '<':
+      return left < right
+    case '<=':
+      return left <= right
+    case '==':
+      return left === right
+    default:
+      return false
+  }
+}
+
+function pickMatchedTrigger(topic, currentData) {
+  return topic.triggers.find((trigger) => trigger.all.every((condition) => evaluateCondition(currentData, condition)))
+}
+
+function buildNextData(group, currentData) {
+  return group.topics.reduce((nextData, topic) => {
+    const previousValue = Number(currentData[topic.key] ?? group.seed[topic.key] ?? topic.min)
+    if (topic.discrete) {
+      const shouldFlip = Math.random() > 0.7
+      const nextValue = shouldFlip ? (previousValue === topic.max ? topic.min : topic.max) : previousValue
+      return { ...nextData, [topic.key]: nextValue }
+    }
+
+    const drift = randomInt(-topic.step, topic.step)
+    return { ...nextData, [topic.key]: clamp(previousValue + drift, topic.min, topic.max) }
+  }, {})
+}
+
+function buildSignalBars(status) {
+  if (status === 'critical') {
+    return [86, 92, 98, 100]
+  }
+
+  if (status === 'warning') {
+    return [52, 68, 80, 92]
+  }
+
+  return Array.from({ length: 4 }, (_, index) => 30 + index * 16 + randomInt(-8, 10))
+}
 
 export function WaitlistPage() {
   const demoSectionRef = useRef(null)
@@ -122,6 +393,13 @@ export function WaitlistPage() {
     topicIndex: 0,
     signal: [35, 58, 82, 100],
     deviceOk: true,
+    liveData: { ...deviceGroups[0].seed },
+    eventName: 'telemetry_ingested',
+    actionName: 'store_payload',
+    conditionLabel: 'waiting for first rule check',
+    triggerStatus: 'normal',
+    payloadValue: formatMetric(deviceGroups[0].topics[0], deviceGroups[0].seed.temperature),
+    topicTimerMs: deviceGroups[0].topics[0].timerMs,
   })
 
   const activeVideo = demoVideos.find((video) => video.videoId === activeVideoId) || demoVideos[0]
@@ -129,31 +407,49 @@ export function WaitlistPage() {
   const activeTopic = activeGroup.topics[preview.topicIndex % activeGroup.topics.length]
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
+    const timer = window.setTimeout(() => {
       setPreview((currentPreview) => {
-        const nextGroupIndex = (currentPreview.groupIndex + 1) % deviceGroups.length
+        const currentGroup = deviceGroups[currentPreview.groupIndex]
+        const nextTopicIndex = (currentPreview.topicIndex + 1) % currentGroup.topics.length
+        const isLastTopicInGroup = nextTopicIndex === 0
+        const nextGroupIndex = isLastTopicInGroup
+          ? (currentPreview.groupIndex + 1) % deviceGroups.length
+          : currentPreview.groupIndex
         const nextGroup = deviceGroups[nextGroupIndex]
+        const baseData = isLastTopicInGroup ? nextGroup.seed : currentPreview.liveData
+        const nextLiveData = buildNextData(nextGroup, baseData)
+        const nextTopic = nextGroup.topics[nextTopicIndex]
+        const matchedTrigger = pickMatchedTrigger(nextTopic, nextLiveData)
+        const triggerStatus = matchedTrigger?.status || 'normal'
         const nextOnlineDevices = Math.max(
           1,
-          nextGroup.totalDevices - Math.floor(Math.random() * 5),
+          nextGroup.totalDevices - randomInt(0, triggerStatus === 'critical' ? 4 : 2),
         )
-        const nextMessages = currentPreview.messages + 1200 + Math.floor(Math.random() * 7800)
+        const nextMessages = currentPreview.messages + 1100 + randomInt(900, 6200)
+        const nextPayloadValue = formatMetric(nextTopic, nextLiveData[nextTopic.key])
 
         return {
           onlineDevices: nextOnlineDevices,
           totalDevices: nextGroup.totalDevices,
           messages: nextMessages,
-          accessRules: 60 + Math.floor(Math.random() * 9),
+          accessRules: 60 + randomInt(0, 8),
           groupIndex: nextGroupIndex,
-          topicIndex: (currentPreview.topicIndex + 1) % nextGroup.topics.length,
-          signal: Array.from({ length: 4 }, () => 28 + Math.floor(Math.random() * 72)),
-          deviceOk: Math.random() > 0.12,
+          topicIndex: nextTopicIndex,
+          signal: buildSignalBars(triggerStatus),
+          deviceOk: triggerStatus !== 'critical' && Math.random() > 0.08,
+          liveData: nextLiveData,
+          eventName: matchedTrigger?.event || 'telemetry_ingested',
+          actionName: matchedTrigger?.action || 'update_dashboard',
+          conditionLabel: matchedTrigger?.label || `No condition matched for ${nextTopic.key}`,
+          triggerStatus,
+          payloadValue: nextPayloadValue,
+          topicTimerMs: matchedTrigger?.timerMs || nextTopic.timerMs,
         }
       })
-    }, 1800)
+    }, preview.topicTimerMs)
 
-    return () => window.clearInterval(timer)
-  }, [])
+    return () => window.clearTimeout(timer)
+  }, [preview.topicTimerMs])
 
   useEffect(() => {
     if (!shouldAutoplayVideo || !videoIframeRef.current) {
@@ -315,7 +611,7 @@ export function WaitlistPage() {
               </div>
             </div>
             <div className="landing-topic-preview">
-              <span>{activeTopic}</span>
+              <span>{activeTopic.name}</span>
               <div className="landing-signal-bars">
                 {preview.signal.map((barHeight, index) => (
                   <i
@@ -323,6 +619,21 @@ export function WaitlistPage() {
                     style={{ height: `${barHeight}%` }}
                   />
                 ))}
+              </div>
+            </div>
+            <div className={`landing-trigger-preview landing-trigger-preview-${preview.triggerStatus}`}>
+              <div className="landing-trigger-head">
+                <strong>Conditional Engine</strong>
+                <small>{`${Math.round(preview.topicTimerMs / 100) / 10}s timer`}</small>
+              </div>
+              <p>{preview.conditionLabel}</p>
+              <div className="landing-trigger-grid">
+                <span>Data</span>
+                <strong>{preview.payloadValue}</strong>
+                <span>Event</span>
+                <strong>{preview.eventName}</strong>
+                <span>Action</span>
+                <strong>{preview.actionName}</strong>
               </div>
             </div>
             <div className="landing-device-row">
