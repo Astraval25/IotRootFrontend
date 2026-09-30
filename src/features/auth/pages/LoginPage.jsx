@@ -33,12 +33,7 @@ export function LoginPage() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Sign in to continue managing devices, topic access, and live broker activity."
-      highlights={[
-        'Review connected device health from one dashboard',
-        'Generate publish and subscribe test commands instantly',
-        'Track usage movement while the workspace stays live',
-      ]}
+      subtitle="Welcome back."
       footerLinks={[
         { to: '/register', label: 'Create account' },
         { to: '/forgot-password', label: 'Forgot password?' },

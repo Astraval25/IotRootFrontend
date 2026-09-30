@@ -105,8 +105,8 @@ export function DashboardOverviewPage() {
     <section className="dashboard-section">
       <header className="dashboard-section-header">
         <div>
-          <h2>Operations Overview</h2>
-          <p>Live fleet health, transfer usage, and quick entry points for your device operations.</p>
+          <h2>Overview</h2>
+          <p>Your devices at a glance.</p>
         </div>
 
         <div className="dashboard-overview-meta">
@@ -120,7 +120,7 @@ export function DashboardOverviewPage() {
             {streamLabel}
           </span>
           <span className="dashboard-muted">
-            {lastUpdatedAt ? `Updated ${formatRelativeTime(lastUpdatedAt)}` : 'Waiting for first update'}
+            {lastUpdatedAt ? `Updated ${formatRelativeTime(lastUpdatedAt)}` : 'Connecting…'}
           </span>
         </div>
       </header>
@@ -149,7 +149,7 @@ export function DashboardOverviewPage() {
         </article>
 
         <article className="dashboard-card dashboard-overview-card">
-          <span>Fleet Health</span>
+          <span>Online</span>
           <strong>{isLoading ? '...' : `${formatCount(connectedDevices)} / ${formatCount(devices.length)}`}</strong>
           <small>{formatCount(disconnectedDevices)} disconnected</small>
         </article>
@@ -159,8 +159,8 @@ export function DashboardOverviewPage() {
         <article className="dashboard-card dashboard-overview-panel">
           <header className="dashboard-overview-panel-header">
             <div>
-              <h3>Traffic Mix</h3>
-              <p>Estimated broker transfer volume across your account.</p>
+              <h3>Data transfer</h3>
+              <p>Last 24 hours</p>
             </div>
           </header>
 
@@ -192,15 +192,14 @@ export function DashboardOverviewPage() {
         <article className="dashboard-card dashboard-overview-panel">
           <header className="dashboard-overview-panel-header">
             <div>
-              <h3>Device Status</h3>
-              <p>Quick live view of the latest known broker session state.</p>
+              <h3>Devices</h3>
             </div>
           </header>
 
           {isLoading ? (
             <p className="dashboard-muted">Loading device statuses...</p>
           ) : devices.length === 0 ? (
-            <p className="dashboard-muted">No devices created yet.</p>
+            <div className="dashboard-empty-state"><span className="dashboard-empty-icon" aria-hidden="true">+</span><h3>Connect your first device</h3><Link className="dashboard-primary-button dashboard-link-button" to="/iotroot/dashboard/devices">Add device</Link></div>
           ) : (
             <div className="dashboard-overview-device-list">
               {devices.slice(0, 6).map((device) => {
@@ -243,7 +242,7 @@ function calculatePercent(value, total) {
     return 0
   }
 
-  return Math.max(8, Math.min(100, Math.round((safeValue / safeTotal) * 100)))
+  return Math.min(100, (safeValue / safeTotal) * 100)
 }
 
 function formatBytes(value) {

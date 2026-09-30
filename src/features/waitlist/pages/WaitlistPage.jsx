@@ -133,7 +133,7 @@ const deviceGroups = [
             label: 'vibration > 78Hz',
             all: [{ key: 'vibration', operator: '>', value: 78 }],
             event: 'motor_vibration_alert',
-            action: 'schedule_maintenance',
+            action: 'notify_operator',
             status: 'warning',
             timerMs: 1000,
           },

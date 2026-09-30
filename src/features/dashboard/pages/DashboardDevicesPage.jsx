@@ -485,20 +485,10 @@ export function DashboardDevicesPage() {
 
   return (
     <section className="dashboard-section">
-      <section className="dashboard-overview-hero dashboard-operations-hero">
-        <div>
-          <p className="dashboard-overview-kicker">Operations Workspace</p>
-          <h3>Manage device identity, topic permissions, broker testing, and usage in one place.</h3>
-          <p className="dashboard-overview-text">
-            Operators can move from provisioning and ACL updates to live validation without switching between separate pages.
-          </p>
-        </div>
-      </section>
 
       <header className="dashboard-section-header">
         <div>
-          <h2>Devices and Topics</h2>
-          <p>Operate credentials, live sessions, ACL rules, and telemetry usage from a single workspace.</p>
+          <h2>Devices</h2>
         </div>
 
         <button
@@ -514,7 +504,7 @@ export function DashboardDevicesPage() {
       </header>
 
       <p className="dashboard-muted">
-        Status Stream:{' '}
+        Live updates:{' '}
         <span
           className={
             statusStream === 'connected'
@@ -529,7 +519,7 @@ export function DashboardDevicesPage() {
 
       <div className="dashboard-grid dashboard-grid-devices">
         <article className="dashboard-card">
-          <h3>{editingId ? `Edit Device #${editingId}` : 'Create Device Profile'}</h3>
+          <h3>{editingId ? `Edit Device #${editingId}` : 'Add device'}</h3>
           <form className="dashboard-form" onSubmit={handleSubmit}>
             <label htmlFor="device-username">
               Username
@@ -587,7 +577,7 @@ export function DashboardDevicesPage() {
         </article>
 
         <article className="dashboard-card">
-          <h3>Device Inventory</h3>
+          <h3>Your devices</h3>
           {isLoading ? (
             <p className="dashboard-muted">Loading devices...</p>
           ) : devices.length === 0 ? (
@@ -713,7 +703,7 @@ export function DashboardDevicesPage() {
             </div>
 
             <section className="dashboard-rules-section">
-              <h4>VerneMQ Session Details</h4>
+              <h4>Session</h4>
               {isLoadingStatus ? (
                 <p className="dashboard-muted">Refreshing session status...</p>
               ) : (
@@ -867,7 +857,7 @@ export function DashboardDevicesPage() {
             </div>
 
             <section className="dashboard-rules-section">
-              <h4>Usage Tracking (Last 24 Hours)</h4>
+              <h4>Usage · Last 24 hours</h4>
               {isLoadingUsage ? (
                 <p className="dashboard-muted">Loading usage stats...</p>
               ) : !selectedDeviceUsageSummary ? (

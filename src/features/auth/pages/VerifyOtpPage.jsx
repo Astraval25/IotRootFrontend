@@ -59,12 +59,7 @@ export function VerifyOtpPage() {
   return (
     <AuthLayout
       title="Verify access"
-      subtitle="Enter the one-time passcode sent to your email to activate the workspace."
-      highlights={[
-        'Short verification before operations unlock',
-        'Resend support without leaving the flow',
-        'Secure team onboarding for production systems',
-      ]}
+      subtitle="Enter the code sent to your email."
       footerLinks={[
         { to: '/iotroot/login', label: 'Back to login' },
         { to: '/register', label: 'Need an account?' },

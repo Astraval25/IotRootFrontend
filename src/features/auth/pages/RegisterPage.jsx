@@ -40,12 +40,7 @@ export function RegisterPage() {
   return (
     <AuthLayout
       title="Create your workspace"
-      subtitle="Set up your account and verify it before opening the operations workspace."
-      highlights={[
-        'Structured onboarding for device teams',
-        'Verification flow aligned with production access control',
-        'Fast handoff into live device operations',
-      ]}
+      subtitle="Create your IotRoot account."
       footerLinks={[
         { to: '/iotroot/login', label: 'Already have an account? Sign in' },
         { to: '/', label: 'Back to waitlist' },

@@ -1,11 +1,11 @@
 @import 'tailwindcss';
 
 :root {
-  font-family: 'Space Grotesk', 'Manrope', 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #10213a;
-  background-color: #f4f8ff;
+  color: #242620;
+  background-color: #f7f8f5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -20,14 +20,11 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 10% 0%, #d7efff 0%, transparent 45%),
-    radial-gradient(circle at 90% 100%, #ffe3c9 0%, transparent 42%),
-    #f4f8ff;
+  background: #ffffff;
 }
 
 a {
-  color: #0e5fd8;
+  color: #947000;
   text-decoration: none;
   font-weight: 600;
 }
@@ -56,9 +53,9 @@ a:hover {
 .auth-card,
 .waitlist-card {
   background: rgba(255, 255, 255, 0.88);
-  border: 1px solid #d3def4;
+  border: 1px solid #dedfd8;
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(16, 33, 58, 0.12);
+  box-shadow: 0 20px 40px rgba(36, 38, 32, 0.12);
 }
 
 .auth-brand {
@@ -70,7 +67,7 @@ a:hover {
 
 .auth-brand-kicker {
   margin: 0;
-  color: #b04a00;
+  color: #947000;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -84,7 +81,7 @@ a:hover {
 
 .auth-brand p {
   margin: 0;
-  color: #34507c;
+  color: #5f6259;
 }
 
 .auth-card {
@@ -98,7 +95,7 @@ a:hover {
 
 .auth-subtitle {
   margin: 0.55rem 0 1.4rem;
-  color: #3e5f8f;
+  color: #5f6259;
 }
 
 .auth-form,
@@ -119,18 +116,18 @@ a:hover {
 .waitlist-field span {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #214270;
+  color: #5f6259;
 }
 
 .auth-input,
 .waitlist-field input {
   width: 100%;
   border-radius: 12px;
-  border: 1px solid #bdd2f5;
-  background: #fbfdff;
+  border: 1px solid #dedfd8;
+  background: #f7f8f5;
   padding: 0.72rem 0.8rem;
   font: inherit;
-  color: #10213a;
+  color: #242620;
   transition: border-color 0.2s ease;
 }
 
@@ -149,7 +146,7 @@ a:hover {
   transform: translateY(-50%);
   border: none;
   background: transparent;
-  color: #42689a;
+  color: #5f6259;
   cursor: pointer;
   width: 2rem;
   height: 2rem;
@@ -160,19 +157,19 @@ a:hover {
 }
 
 .auth-eye-toggle:hover {
-  background: #edf3ff;
-  color: #184f9b;
+  background: #f6edcf;
+  color: #5f6259;
 }
 
 .auth-eye-toggle:focus-visible {
-  outline: 2px solid #0e5fd8;
+  outline: 2px solid #947000;
   outline-offset: 2px;
 }
 
 .auth-input:focus,
 .waitlist-field input:focus {
   outline: none;
-  border-color: #0e5fd8;
+  border-color: #947000;
 }
 
 .auth-button,
@@ -190,14 +187,14 @@ a:hover {
 .auth-button,
 .waitlist-button {
   color: #ffffff;
-  background: linear-gradient(110deg, #0e5fd8, #1673f5);
-  box-shadow: 0 10px 20px rgba(14, 95, 216, 0.26);
+  background: linear-gradient(110deg, #947000, #947000);
+  box-shadow: 0 10px 20px rgba(148, 112, 0, 0.26);
 }
 
 .auth-secondary-button {
   margin-top: 0.75rem;
-  color: #214270;
-  background: #e6efff;
+  color: #5f6259;
+  background: #f6edcf;
 }
 
 .auth-button:hover,
@@ -263,7 +260,7 @@ a:hover {
   width: 280px;
   height: 280px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(14, 95, 216, 0.25), transparent 70%);
+  background: radial-gradient(circle, rgba(148, 112, 0, 0.25), transparent 70%);
   pointer-events: none;
 }
 
@@ -273,7 +270,7 @@ a:hover {
   letter-spacing: 0.08em;
   font-size: 0.78rem;
   font-weight: 800;
-  color: #b04a00;
+  color: #947000;
 }
 
 .waitlist-card h1 {
@@ -301,7 +298,7 @@ a:hover {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 250px 1fr;
-  background: #f2f6ff;
+  background: #f7f8f5;
 }
 
 .dashboard-sidebar {
@@ -340,7 +337,7 @@ a:hover {
 }
 
 .dashboard-nav-link.active {
-  background: #1a67db;
+  background: #947000;
   color: #ffffff;
 }
 
@@ -369,7 +366,7 @@ a:hover {
   gap: 1rem;
   padding: 1rem 1.2rem;
   background: rgba(255, 255, 255, 0.92);
-  border-bottom: 1px solid #d4def2;
+  border-bottom: 1px solid #dedfd8;
 }
 
 .dashboard-topbar h1 {
@@ -383,9 +380,9 @@ a:hover {
 }
 
 .dashboard-chip {
-  border: 1px solid #cbdafa;
-  background: #eef4ff;
-  color: #1f4677;
+  border: 1px solid #dedfd8;
+  background: #f6edcf;
+  color: #5f6259;
   border-radius: 999px;
   padding: 0.4rem 0.7rem;
   font: inherit;
@@ -428,7 +425,7 @@ a:hover {
 
 .dashboard-section-header p {
   margin: 0.35rem 0 0;
-  color: #385a88;
+  color: #5f6259;
 }
 
 .dashboard-grid {
@@ -443,7 +440,7 @@ a:hover {
 
 .dashboard-card {
   background: rgba(255, 255, 255, 0.94);
-  border: 1px solid #d3def4;
+  border: 1px solid #dedfd8;
   border-radius: 16px;
   padding: 1rem;
 }
@@ -464,51 +461,51 @@ a:hover {
   gap: 0.3rem;
   font-weight: 600;
   font-size: 0.9rem;
-  color: #214270;
+  color: #5f6259;
 }
 
 .dashboard-form input {
-  border: 1px solid #bdd2f5;
+  border: 1px solid #dedfd8;
   border-radius: 10px;
   padding: 0.65rem 0.75rem;
   font: inherit;
 }
 
 .dashboard-form select {
-  border: 1px solid #bdd2f5;
+  border: 1px solid #dedfd8;
   border-radius: 10px;
   padding: 0.65rem 0.75rem;
   font: inherit;
   background: #ffffff;
-  color: #10213a;
+  color: #242620;
 }
 
 .dashboard-form input:focus,
 .dashboard-form select:focus {
   outline: none;
-  border-color: #0e5fd8;
+  border-color: #947000;
 }
 
 .dashboard-topic-input {
   display: flex;
   min-width: 0;
-  border: 1px solid #bdd2f5;
+  border: 1px solid #dedfd8;
   border-radius: 10px;
-  background: #fbfdff;
+  background: #f7f8f5;
   overflow: hidden;
 }
 
 .dashboard-topic-input:focus-within {
-  border-color: #0e5fd8;
+  border-color: #947000;
 }
 
 .dashboard-topic-prefix {
   display: inline-flex;
   align-items: center;
   padding: 0.65rem 0.75rem;
-  background: #eef4ff;
-  color: #214270;
-  border-right: 1px solid #d8e4fa;
+  background: #f6edcf;
+  color: #5f6259;
+  border-right: 1px solid #dedfd8;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -527,7 +524,7 @@ a:hover {
 
 .dashboard-topic-helper {
   margin: -0.15rem 0 0;
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.85rem;
 }
 
@@ -548,7 +545,7 @@ a:hover {
 
 .dashboard-primary-button {
   color: #ffffff;
-  background: #0e5fd8;
+  background: #947000;
 }
 
 .dashboard-primary-button:disabled {
@@ -557,8 +554,8 @@ a:hover {
 }
 
 .dashboard-secondary-button {
-  color: #1d4a86;
-  background: #e7efff;
+  color: #5f6259;
+  background: #f6edcf;
 }
 
 .dashboard-message {
@@ -580,7 +577,7 @@ a:hover {
 
 .dashboard-muted {
   margin: 0;
-  color: #4d6890;
+  color: #5f6259;
 }
 
 .dashboard-table-wrap {
@@ -594,7 +591,7 @@ a:hover {
 
 .dashboard-table th,
 .dashboard-table td {
-  border-bottom: 1px solid #dce6fa;
+  border-bottom: 1px solid #dedfd8;
   padding: 0.6rem;
   text-align: left;
   font-size: 0.9rem;
@@ -606,9 +603,9 @@ a:hover {
 }
 
 .dashboard-row-actions button {
-  border: 1px solid #c8d9f8;
-  background: #f4f8ff;
-  color: #214270;
+  border: 1px solid #dedfd8;
+  background: #f7f8f5;
+  color: #5f6259;
   border-radius: 8px;
   padding: 0.3rem 0.5rem;
   font: inherit;
@@ -616,9 +613,9 @@ a:hover {
 }
 
 .dashboard-inline-action {
-  border: 1px solid #c8d9f8;
-  background: #f4f8ff;
-  color: #214270;
+  border: 1px solid #dedfd8;
+  background: #f7f8f5;
+  color: #5f6259;
   border-radius: 8px;
   padding: 0.3rem 0.55rem;
   font: inherit;
@@ -654,7 +651,7 @@ a:hover {
 }
 
 .dashboard-row-selected {
-  background: #f4f8ff;
+  background: #f7f8f5;
 }
 
 .dashboard-details-card {
@@ -676,16 +673,16 @@ a:hover {
   justify-content: space-between;
   gap: 1rem;
   padding: 1.1rem 1.2rem;
-  border: 1px solid #d3def4;
+  border: 1px solid #dedfd8;
   border-radius: 18px;
   background:
-    radial-gradient(circle at top right, rgba(14, 95, 216, 0.14), transparent 30%),
+    radial-gradient(circle at top right, rgba(148, 112, 0, 0.14), transparent 30%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 248, 255, 0.96));
 }
 
 .dashboard-overview-kicker {
   margin: 0 0 0.45rem;
-  color: #b04a00;
+  color: #947000;
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -700,7 +697,7 @@ a:hover {
 .dashboard-overview-text {
   margin: 0.65rem 0 0;
   max-width: 720px;
-  color: #385a88;
+  color: #5f6259;
 }
 
 .dashboard-overview-actions {
@@ -721,7 +718,7 @@ a:hover {
 }
 
 .dashboard-overview-card span {
-  color: #60779d;
+  color: #5f6259;
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -729,13 +726,13 @@ a:hover {
 }
 
 .dashboard-overview-card strong {
-  color: #10213a;
+  color: #242620;
   font-size: 1.55rem;
   line-height: 1.1;
 }
 
 .dashboard-overview-card small {
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.84rem;
 }
 
@@ -756,7 +753,7 @@ a:hover {
 
 .dashboard-overview-panel-header p {
   margin: 0.3rem 0 0;
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.88rem;
 }
 
@@ -771,26 +768,26 @@ a:hover {
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.85rem 0.95rem;
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 12px;
-  background: #fbfdff;
-  color: #10213a;
+  background: #f7f8f5;
+  color: #242620;
 }
 
 .dashboard-overview-device-item:hover {
   text-decoration: none;
-  border-color: #bdd2f5;
-  background: #f4f8ff;
+  border-color: #dedfd8;
+  background: #f7f8f5;
 }
 
 .dashboard-overview-device-item strong {
   display: block;
-  color: #10213a;
+  color: #242620;
 }
 
 .dashboard-overview-device-item span {
   display: block;
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.84rem;
 }
 
@@ -807,15 +804,15 @@ a:hover {
 
 .dashboard-details-header p {
   margin: 0.3rem 0 0;
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.9rem;
 }
 
 .dashboard-details-badge {
   border-radius: 999px;
   padding: 0.35rem 0.65rem;
-  background: #e7efff;
-  color: #1d4a86;
+  background: #f6edcf;
+  color: #5f6259;
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -827,10 +824,10 @@ a:hover {
 }
 
 .dashboard-detail-item {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 12px;
   padding: 0.75rem;
-  background: #fbfdff;
+  background: #f7f8f5;
   display: grid;
   gap: 0.45rem;
 }
@@ -840,11 +837,11 @@ a:hover {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #60779d;
+  color: #5f6259;
 }
 
 .dashboard-detail-item strong {
-  color: #10213a;
+  color: #242620;
   font-size: 0.95rem;
   overflow-wrap: anywhere;
 }
@@ -856,10 +853,10 @@ a:hover {
 }
 
 .dashboard-cli-card {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 12px;
   padding: 0.85rem;
-  background: #fbfdff;
+  background: #f7f8f5;
   display: grid;
   gap: 0.65rem;
 }
@@ -871,15 +868,15 @@ a:hover {
 
 .dashboard-cli-card p {
   margin: 0.25rem 0 0;
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.84rem;
 }
 
 .dashboard-cli-block {
-  border: 1px solid #d6e3fa;
+  border: 1px solid #dedfd8;
   border-radius: 10px;
-  background: #f1f6ff;
-  color: #10213a;
+  background: #f7f8f5;
+  color: #242620;
   padding: 0.75rem;
   overflow-x: auto;
   font-size: 0.82rem;
@@ -904,18 +901,18 @@ a:hover {
 }
 
 .dashboard-usage-stat {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 14px;
   padding: 0.9rem;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 248, 255, 0.94)),
-    #fbfdff;
+    #f7f8f5;
   display: grid;
   gap: 0.35rem;
 }
 
 .dashboard-usage-stat span {
-  color: #60779d;
+  color: #5f6259;
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -923,13 +920,13 @@ a:hover {
 }
 
 .dashboard-usage-stat strong {
-  color: #10213a;
+  color: #242620;
   font-size: 1.35rem;
   line-height: 1.1;
 }
 
 .dashboard-usage-stat small {
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.83rem;
 }
 
@@ -945,10 +942,10 @@ a:hover {
 }
 
 .dashboard-usage-panel {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 14px;
   padding: 0.95rem;
-  background: #fbfdff;
+  background: #f7f8f5;
   display: grid;
   gap: 0.8rem;
 }
@@ -960,7 +957,7 @@ a:hover {
 
 .dashboard-usage-panel p {
   margin: 0.25rem 0 0;
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.84rem;
 }
 
@@ -972,7 +969,7 @@ a:hover {
 .dashboard-usage-bar-track {
   height: 14px;
   border-radius: 999px;
-  background: #e7efff;
+  background: #f6edcf;
   overflow: hidden;
   display: flex;
 }
@@ -982,11 +979,11 @@ a:hover {
 }
 
 .dashboard-usage-bar-inbound {
-  background: linear-gradient(90deg, #0e5fd8, #3c8dff);
+  background: linear-gradient(90deg, #947000, #947000);
 }
 
 .dashboard-usage-bar-outbound {
-  background: linear-gradient(90deg, #ffb04d, #ff7f32);
+  background: linear-gradient(90deg, #d6b957, #d6b957);
 }
 
 .dashboard-usage-legend {
@@ -996,7 +993,7 @@ a:hover {
 }
 
 .dashboard-usage-legend div {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 12px;
   padding: 0.7rem;
   background: #ffffff;
@@ -1005,12 +1002,12 @@ a:hover {
 }
 
 .dashboard-usage-legend strong {
-  color: #10213a;
+  color: #242620;
   font-size: 0.92rem;
 }
 
 .dashboard-usage-legend small {
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.8rem;
 }
 
@@ -1022,11 +1019,11 @@ a:hover {
 }
 
 .dashboard-usage-dot-inbound {
-  background: #1f74f2;
+  background: #947000;
 }
 
 .dashboard-usage-dot-outbound {
-  background: #ff8b38;
+  background: #d6b957;
 }
 
 .dashboard-usage-kpis {
@@ -1035,7 +1032,7 @@ a:hover {
 }
 
 .dashboard-usage-kpis div {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 12px;
   padding: 0.75rem;
   background: #ffffff;
@@ -1044,7 +1041,7 @@ a:hover {
 }
 
 .dashboard-usage-kpis span {
-  color: #60779d;
+  color: #5f6259;
   font-size: 0.77rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -1052,7 +1049,7 @@ a:hover {
 }
 
 .dashboard-usage-kpis strong {
-  color: #10213a;
+  color: #242620;
   font-size: 1rem;
 }
 
@@ -1062,10 +1059,10 @@ a:hover {
 }
 
 .dashboard-usage-activity-item {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 14px;
   padding: 0.9rem;
-  background: #fbfdff;
+  background: #f7f8f5;
   display: grid;
   gap: 0.55rem;
 }
@@ -1079,18 +1076,18 @@ a:hover {
 
 .dashboard-usage-activity-head strong {
   display: block;
-  color: #10213a;
+  color: #242620;
   font-size: 0.95rem;
 }
 
 .dashboard-usage-activity-head span {
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.82rem;
 }
 
 .dashboard-usage-topic {
   margin: 0;
-  color: #214270;
+  color: #5f6259;
   font-size: 0.9rem;
   font-weight: 700;
   overflow-wrap: anywhere;
@@ -1099,7 +1096,7 @@ a:hover {
 .dashboard-usage-activity-bar {
   height: 10px;
   border-radius: 999px;
-  background: #e7efff;
+  background: #f6edcf;
   overflow: hidden;
 }
 
@@ -1107,7 +1104,7 @@ a:hover {
   display: flex;
   justify-content: space-between;
   gap: 0.75rem;
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.82rem;
 }
 
@@ -1172,19 +1169,19 @@ a:hover {
 }
 
 .auth-brand-metrics strong {
-  color: #10213a;
+  color: #242620;
   font-size: 0.95rem;
 }
 
 .auth-brand-metrics span {
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.84rem;
 }
 
 .auth-brand-list {
   margin: 1.4rem 0 0;
   padding-left: 1.1rem;
-  color: #214270;
+  color: #5f6259;
   display: grid;
   gap: 0.45rem;
 }
@@ -1204,7 +1201,7 @@ a:hover {
 
 .waitlist-cta {
   padding: 1.2rem;
-  border: 1px solid #d7e3f9;
+  border: 1px solid #dedfd8;
   border-radius: 18px;
   background: rgba(251, 253, 255, 0.92);
 }
@@ -1216,7 +1213,7 @@ a:hover {
 
 .waitlist-stats div {
   padding: 0.9rem 1rem;
-  border: 1px solid #d7e3f9;
+  border: 1px solid #dedfd8;
   border-radius: 14px;
   background: rgba(251, 253, 255, 0.9);
   display: grid;
@@ -1224,11 +1221,11 @@ a:hover {
 }
 
 .waitlist-stats strong {
-  color: #10213a;
+  color: #242620;
 }
 
 .waitlist-stats span {
-  color: #4d6890;
+  color: #5f6259;
   font-size: 0.84rem;
 }
 
@@ -1239,7 +1236,7 @@ a:hover {
 .dashboard-subcard {
   padding: 0;
   border-radius: 14px;
-  background: #fbfdff;
+  background: #f7f8f5;
 }
 
 .dashboard-subcard h5 {
@@ -1277,8 +1274,8 @@ a:hover {
 
 .landing-page {
   min-height: 100vh;
-  background: #f7f9fc;
-  color: #10213a;
+  background: #f7f8f5;
+  color: #242620;
 }
 
 .landing-nav {
@@ -1290,7 +1287,7 @@ a:hover {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.9rem clamp(1rem, 4vw, 3rem);
-  border-bottom: 1px solid #dce6f6;
+  border-bottom: 1px solid #dedfd8;
   background: rgba(247, 249, 252, 0.92);
   backdrop-filter: blur(14px);
 }
@@ -1300,7 +1297,7 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  color: #10213a;
+  color: #242620;
   text-decoration: none;
 }
 
@@ -1318,7 +1315,7 @@ a:hover {
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 8px;
-  background: #0e5fd8;
+  background: #947000;
   color: #ffffff;
   font-size: 0.82rem;
   font-weight: 800;
@@ -1338,12 +1335,12 @@ a:hover {
 }
 
 .landing-nav-links a {
-  color: #426084;
+  color: #5f6259;
   font-size: 0.93rem;
 }
 
 .landing-nav-login {
-  border: 1px solid #cbdafa;
+  border: 1px solid #dedfd8;
   border-radius: 10px;
   padding: 0.5rem 0.75rem;
   background: #ffffff;
@@ -1372,7 +1369,7 @@ a:hover {
 .landing-cta h2,
 .landing-lead-section h2 {
   margin: 0;
-  color: #0d1c32;
+  color: #242620;
   line-height: 1.04;
 }
 
@@ -1384,19 +1381,19 @@ a:hover {
 .landing-hero-text {
   max-width: 680px;
   margin: 1.1rem 0 0;
-  color: #385a88;
+  color: #5f6259;
   font-size: clamp(1.05rem, 2vw, 1.32rem);
 }
 
 .landing-section-text {
   max-width: 520px;
   margin: 0.8rem 0 0;
-  color: #385a88;
+  color: #5f6259;
 }
 
 .landing-kicker {
   margin: 0 0 0.7rem;
-  color: #b04a00;
+  color: #947000;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -1437,15 +1434,15 @@ a:hover {
 }
 
 .landing-button-primary {
-  background: #0e5fd8;
+  background: #947000;
   color: #ffffff;
-  box-shadow: 0 14px 28px rgba(14, 95, 216, 0.24);
+  box-shadow: 0 14px 28px rgba(148, 112, 0, 0.24);
 }
 
 .landing-button-secondary {
-  border-color: #c8d9f8;
+  border-color: #dedfd8;
   background: #ffffff;
-  color: #173d70;
+  color: #5f6259;
 }
 
 .landing-product-stack {
@@ -1458,10 +1455,10 @@ a:hover {
   position: absolute;
   width: 92%;
   min-height: 190px;
-  border: 1px solid #d3def4;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0 18px 42px rgba(16, 33, 58, 0.1);
+  box-shadow: 0 18px 42px rgba(36, 38, 32, 0.1);
   pointer-events: none;
   padding: 0.9rem;
   display: grid;
@@ -1490,21 +1487,21 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   gap: 0.7rem;
-  border-bottom: 1px solid #e0e8f7;
+  border-bottom: 1px solid #dedfd8;
   padding-bottom: 0.7rem;
 }
 
 .landing-product-back-card span,
 .landing-product-back-card p,
 .landing-product-back-card small {
-  color: #426084;
+  color: #5f6259;
 }
 
 .landing-product-back-card p {
   margin: 0;
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
-  background: #f4f8ff;
+  background: #f7f8f5;
   padding: 0.7rem;
   font-weight: 800;
 }
@@ -1521,10 +1518,10 @@ a:hover {
 .landing-product-shot {
   position: relative;
   z-index: 1;
-  border: 1px solid #cddcf4;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0 26px 60px rgba(16, 33, 58, 0.14);
+  box-shadow: 0 26px 60px rgba(36, 38, 32, 0.14);
   padding: 1rem;
   display: grid;
   gap: 0.9rem;
@@ -1540,14 +1537,14 @@ a:hover {
 }
 
 .landing-product-top {
-  border-bottom: 1px solid #e0e8f7;
+  border-bottom: 1px solid #dedfd8;
   padding-bottom: 0.85rem;
 }
 
 .landing-product-top span,
 .landing-topic-preview span,
 .landing-device-row span {
-  color: #35547e;
+  color: #5f6259;
   overflow-wrap: anywhere;
 }
 
@@ -1568,16 +1565,16 @@ a:hover {
 }
 
 .landing-product-grid div {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
   padding: 0.85rem;
-  background: #fbfdff;
+  background: #f7f8f5;
   display: grid;
   gap: 0.25rem;
 }
 
 .landing-product-grid span {
-  color: #60779d;
+  color: #5f6259;
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -1590,17 +1587,17 @@ a:hover {
 
 .landing-topic-preview,
 .landing-device-row {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
   padding: 0.9rem;
-  background: #f4f8ff;
+  background: #f7f8f5;
 }
 
 .landing-trigger-preview {
-  border: 1px solid #dce6fa;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
   padding: 0.85rem;
-  background: #f8fbff;
+  background: #f7f8f5;
   display: grid;
   gap: 0.55rem;
 }
@@ -1613,20 +1610,20 @@ a:hover {
 }
 
 .landing-trigger-head strong {
-  color: #23406a;
+  color: #5f6259;
   font-size: 0.84rem;
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
 
 .landing-trigger-head small {
-  color: #5d7699;
+  color: #5f6259;
   font-weight: 700;
 }
 
 .landing-trigger-preview p {
   margin: 0;
-  color: #35547e;
+  color: #5f6259;
   font-size: 0.84rem;
 }
 
@@ -1638,14 +1635,14 @@ a:hover {
 }
 
 .landing-trigger-grid span {
-  color: #60779d;
+  color: #5f6259;
   font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: 700;
 }
 
 .landing-trigger-grid strong {
-  color: #1f3e67;
+  color: #5f6259;
   font-size: 0.83rem;
   overflow-wrap: anywhere;
 }
@@ -1670,12 +1667,12 @@ a:hover {
 .landing-signal-bars i {
   width: 9px;
   border-radius: 999px 999px 0 0;
-  background: #0e5fd8;
+  background: #947000;
   transition: height 0.45s ease;
 }
 
 .landing-signal-bars i:last-child {
-  background: #ff8b38;
+  background: #d6b957;
 }
 
 .landing-device-row .landing-status-warning {
@@ -1685,7 +1682,7 @@ a:hover {
 
 .landing-band {
   padding: clamp(2.4rem, 6vw, 4.5rem) 0;
-  border-top: 1px solid #dfe8f6;
+  border-top: 1px solid #dedfd8;
 }
 
 .landing-two-column,
@@ -1719,7 +1716,7 @@ a:hover {
 .landing-feature,
 .landing-price-card,
 .landing-trust article {
-  border: 1px solid #d3def4;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
   background: #ffffff;
 }
@@ -1734,13 +1731,13 @@ a:hover {
 
 .landing-card p {
   margin: 0;
-  color: #1e3555;
+  color: #242620;
   font-weight: 700;
 }
 
 .landing-card-strong {
-  border-color: #b8d0f8;
-  background: #f7fbff;
+  border-color: #dedfd8;
+  background: #f7f8f5;
 }
 
 .landing-card-icon {
@@ -1750,8 +1747,8 @@ a:hover {
   width: 1.8rem;
   height: 1.8rem;
   border-radius: 8px;
-  background: #eef4ff;
-  color: #0e5fd8;
+  background: #f6edcf;
+  color: #947000;
   font-weight: 900;
 }
 
@@ -1768,9 +1765,9 @@ a:hover {
 
 .landing-step {
   position: relative;
-  border: 1px solid #d3def4;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
-  background: #10213a;
+  background: #242620;
   color: #ffffff;
   overflow: hidden;
   display: grid;
@@ -1803,7 +1800,7 @@ a:hover {
   height: 2rem;
   border-radius: 8px;
   background: #ffffff;
-  color: #10213a;
+  color: #242620;
   font-weight: 900;
 }
 
@@ -1820,13 +1817,13 @@ a:hover {
   border: none;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.94);
-  color: #10213a;
+  color: #242620;
   padding: 0.52rem 0.72rem;
   font: inherit;
   font-size: 0.86rem;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(16, 33, 58, 0.2);
+  box-shadow: 0 8px 18px rgba(36, 38, 32, 0.2);
 }
 
 .landing-step button:hover {
@@ -1842,7 +1839,7 @@ a:hover {
 }
 
 .landing-video-main {
-  border: 1px solid #d3def4;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
   background: #ffffff;
   overflow: hidden;
@@ -1901,7 +1898,7 @@ a:hover {
   width: 0.7rem;
   height: 0.7rem;
   border-radius: 999px;
-  background: #ff8b38;
+  background: #d6b957;
   flex: 0 0 auto;
 }
 
@@ -1912,11 +1909,11 @@ a:hover {
 }
 
 .landing-users span {
-  border: 1px solid #c8d9f8;
+  border: 1px solid #dedfd8;
   border-radius: 999px;
   background: #ffffff;
   padding: 0.68rem 0.9rem;
-  color: #214270;
+  color: #5f6259;
   font-weight: 800;
 }
 
@@ -1931,20 +1928,20 @@ a:hover {
 }
 
 .landing-price-card span {
-  color: #b04a00;
+  color: #947000;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .landing-price-card strong {
-  color: #10213a;
+  color: #242620;
   font-size: 2rem;
 }
 
 .landing-price-card p {
   margin: 0;
-  color: #385a88;
+  color: #5f6259;
 }
 
 .landing-price-card a {
@@ -1967,12 +1964,12 @@ a:hover {
 .landing-trust p,
 .landing-lead-section p {
   margin: 0.55rem 0 0;
-  color: #385a88;
+  color: #5f6259;
 }
 
 .landing-cta {
   padding: clamp(2.5rem, 6vw, 4.5rem) 0;
-  border-top: 1px solid #dfe8f6;
+  border-top: 1px solid #dedfd8;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1984,7 +1981,7 @@ a:hover {
 }
 
 .landing-lead-form {
-  border: 1px solid #d3def4;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
   background: #ffffff;
   padding: 1rem;
@@ -1998,7 +1995,7 @@ a:hover {
 }
 
 .landing-lead-form span {
-  color: #214270;
+  color: #5f6259;
   font-size: 0.9rem;
   font-weight: 800;
 }
@@ -2006,10 +2003,10 @@ a:hover {
 .landing-lead-form input,
 .landing-lead-form textarea {
   width: 100%;
-  border: 1px solid #bdd2f5;
+  border: 1px solid #dedfd8;
   border-radius: 8px;
-  background: #fbfdff;
-  color: #10213a;
+  background: #f7f8f5;
+  color: #242620;
   padding: 0.72rem 0.8rem;
   font: inherit;
 }
@@ -2021,7 +2018,7 @@ a:hover {
 .landing-lead-form input:focus,
 .landing-lead-form textarea:focus {
   outline: none;
-  border-color: #0e5fd8;
+  border-color: #947000;
 }
 
 .landing-form-message {
@@ -2047,17 +2044,17 @@ a:hover {
   flex-wrap: wrap;
   gap: 1rem;
   padding: 1.3rem 0 2rem;
-  border-top: 1px solid #dfe8f6;
+  border-top: 1px solid #dedfd8;
 }
 
 .landing-footer span {
   margin-right: auto;
-  color: #10213a;
+  color: #242620;
   font-weight: 900;
 }
 
 .landing-footer a {
-  color: #426084;
+  color: #5f6259;
 }
 
 @media (max-width: 760px) {

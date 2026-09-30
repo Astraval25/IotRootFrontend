@@ -35,12 +35,7 @@ export function ForgotPasswordPage() {
   return (
     <AuthLayout
       title="Recover your account"
-      subtitle="Request a reset code and continue restoring access without losing your setup."
-      highlights={[
-        'Recovery flow aligned with verification policy',
-        'Works with existing workspace identity',
-        'Fast path back into the operations dashboard',
-      ]}
+      subtitle="We’ll email you a reset code."
       footerLinks={[
         { to: '/iotroot/login', label: 'Back to login' },
         { to: '/register', label: 'Create account' },

@@ -8,8 +8,6 @@ import { VerifyOtpPage } from '../features/auth/pages/VerifyOtpPage'
 import { DashboardLayout } from '../features/dashboard/components/DashboardLayout'
 import { DashboardDevicesPage } from '../features/dashboard/pages/DashboardDevicesPage'
 import { DashboardOverviewPage } from '../features/dashboard/pages/DashboardOverviewPage'
-import { DashboardSchedulesPage } from '../features/dashboard/pages/DashboardSchedulesPage'
-import { DashboardScreensPage } from '../features/dashboard/pages/DashboardScreensPage'
 import { WaitlistPage } from '../features/waitlist/pages/WaitlistPage'
 
 export function AppRouter() {
@@ -32,9 +30,7 @@ export function AppRouter() {
         >
           <Route index element={<DashboardOverviewPage />} />
           <Route path="devices" element={<DashboardDevicesPage />} />
-          <Route path="screens" element={<DashboardScreensPage />} />
-          <Route path="schedules" element={<DashboardSchedulesPage />} />
-          <Route path="topics" element={<Navigate to="/iotroot/dashboard/screens" replace />} />
+          <Route path="topics" element={<Navigate to="/iotroot/dashboard/devices" replace />} />
           <Route path="*" element={<Navigate to="/iotroot/dashboard" replace />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

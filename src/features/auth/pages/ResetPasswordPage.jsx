@@ -52,12 +52,7 @@ export function ResetPasswordPage() {
   return (
     <AuthLayout
       title="Reset password"
-      subtitle="Confirm the reset code and choose a new password for your workspace."
-      highlights={[
-        'OTP-protected password reset',
-        'Built for secure operator account recovery',
-        'Straight back into the live dashboard after reset',
-      ]}
+      subtitle="Enter your code and new password."
       footerLinks={[
         { to: '/iotroot/login', label: 'Back to login' },
         { to: '/forgot-password', label: 'Resend OTP' },
