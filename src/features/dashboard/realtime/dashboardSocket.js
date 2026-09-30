@@ -1,25 +1,26 @@
-import { API_BASE_URL } from '../../../shared/config/env'
-
-export function openDashboardSocket({ token, onStatusChange, onEvent }) {
+export function openDashboardSocket({ getToken, apiBaseUrl, onStatusChange, onEvent }) {
   let socket = null
   let reconnectTimerId = null
   let disposed = false
   let reconnectAttempt = 0
 
   function connect() {
+    const token = getToken()
     if (disposed || !token) {
       return
     }
 
     onStatusChange?.(reconnectAttempt === 0 ? 'connecting' : 'reconnecting')
-    socket = new WebSocket(buildStatusWsUrl(API_BASE_URL, token))
+    socket = new WebSocket(buildStatusWsUrl(apiBaseUrl, token))
 
     socket.onopen = () => {
+      if (disposed) return
       reconnectAttempt = 0
       onStatusChange?.('connected')
     }
 
     socket.onmessage = (event) => {
+      if (disposed) return
       try {
         const payload = JSON.parse(event.data)
         onEvent?.(payload)
@@ -29,12 +30,11 @@ export function openDashboardSocket({ token, onStatusChange, onEvent }) {
     }
 
     socket.onerror = () => {
-      onStatusChange?.('error')
+      if (!disposed) onStatusChange?.('reconnecting')
     }
 
     socket.onclose = () => {
       if (disposed) {
-        onStatusChange?.('disconnected')
         return
       }
 

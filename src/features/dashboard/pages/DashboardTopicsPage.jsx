@@ -1,358 +1,71 @@
 import { useEffect, useState } from 'react'
-import {
-  createDeviceRule,
-  deleteDeviceRule,
-  fetchDeviceRules,
-  fetchDevices,
-  updateDeviceRule,
-} from '../api/deviceApi'
-import { getCurrentUserId } from '../../auth/session/authSession'
+import { Link, useSearchParams } from 'react-router-dom'
+import { deleteDeviceRule } from '../api/deviceApi'
+import { useWorkspace } from '../realtime/useWorkspace'
+import { DeviceForm } from '../components/DeviceForm'
+import { TopicForm } from '../components/TopicForm'
+import { WorkspaceDialog } from '../components/WorkspaceDialog'
+import { filterTopics } from '../workspaceFilters'
 
-const initialForm = {
-  topic: '',
-  permission: 'publish',
-}
-
-const permissions = ['publish', 'subscribe', 'readwrite']
-
-function normalizeTopicInput(topic) {
-  return topic.trim().replace(/^\/+/, '')
-}
-
-function getTopicPrefix(userId) {
-  return userId ? `/iot/${userId}/` : '/iot/user_id/'
-}
-
-function stripTopicPrefix(topic, userId) {
-  const prefix = getTopicPrefix(userId)
-  return topic?.startsWith(prefix) ? topic.slice(prefix.length) : topic ?? ''
-}
+const permissionLabels = { publish: 'Publish', subscribe: 'Subscribe', readwrite: 'Publish & subscribe' }
 
 export function DashboardTopicsPage() {
-  const [devices, setDevices] = useState([])
-  const [selectedDeviceId, setSelectedDeviceId] = useState('')
-  const [rules, setRules] = useState([])
-  const [form, setForm] = useState(initialForm)
-  const [editingRuleId, setEditingRuleId] = useState(null)
-  const [message, setMessage] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-  const [isLoadingDevices, setIsLoadingDevices] = useState(true)
-  const [isLoadingRules, setIsLoadingRules] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const userId = getCurrentUserId()
-  const topicPrefix = getTopicPrefix(userId)
-
-  useEffect(() => {
-    let isDisposed = false
-
-    async function initializeDevices() {
-      try {
-        const response = await fetchDevices()
-        const nextDevices = response.data ?? []
-
-        if (!isDisposed) {
-          setDevices(nextDevices)
-          setSelectedDeviceId(nextDevices[0]?.id ? String(nextDevices[0].id) : '')
-        }
-      } catch (error) {
-        if (!isDisposed) {
-          setErrorMessage(error.message || 'Failed to load devices.')
-        }
-      } finally {
-        if (!isDisposed) {
-          setIsLoadingDevices(false)
-        }
-      }
-    }
-
-    initializeDevices()
-
-    return () => {
-      isDisposed = true
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!selectedDeviceId) {
-      return
-    }
-
-    let isDisposed = false
-
-    async function loadRules() {
-      setIsLoadingRules(true)
-
-      try {
-        const response = await fetchDeviceRules(selectedDeviceId)
-
-        if (!isDisposed) {
-          setRules(response.data ?? [])
-        }
-      } catch (error) {
-        if (!isDisposed) {
-          setErrorMessage(error.message || 'Failed to load rules.')
-          setRules([])
-        }
-      } finally {
-        if (!isDisposed) {
-          setIsLoadingRules(false)
-        }
-      }
-    }
-
-    loadRules()
-
-    return () => {
-      isDisposed = true
-    }
-  }, [selectedDeviceId])
-
-  function updateForm(key, value) {
-    setForm((previous) => ({ ...previous, [key]: value }))
+  const { devices, topics, topicsLoading, topicsError, store } = useWorkspace()
+  const [params, setParams] = useSearchParams()
+  const [editor, setEditor] = useState(null)
+  const [addingDevice, setAddingDevice] = useState(false)
+  const [selected, setSelected] = useState(null)
+  const [deleting, setDeleting] = useState(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  useEffect(() => { store.loadTopics() }, [store])
+  const search = params.get('q') ?? ''
+  const deviceId = params.get('device') ?? ''
+  const permission = params.get('permission') ?? ''
+  const rows = filterTopics(topics ?? [], devices ?? [], { search, deviceId, permission })
+  const deviceName = id => devices?.find(device => String(device.id) === String(id))?.username || `Device #${id}`
+  function changeParam(key, value) {
+    setParams(previous => { const next = new URLSearchParams(previous); if (value) next.set(key, value); else next.delete(key); return next }, { replace: true })
   }
-
-  function resetForm() {
-    setForm(initialForm)
-    setEditingRuleId(null)
-  }
-
-  async function reloadRules() {
-    if (!selectedDeviceId) {
-      setRules([])
-      return
-    }
-
-    setIsLoadingRules(true)
-
+  async function confirmDelete() {
+    if (busy) return
+    setBusy(true)
+    setError('')
     try {
-      const response = await fetchDeviceRules(selectedDeviceId)
-      setRules(response.data ?? [])
-    } catch (error) {
-      setErrorMessage(error.message || 'Failed to load rules.')
-      setRules([])
-    } finally {
-      setIsLoadingRules(false)
-    }
+      await deleteDeviceRule(deleting.deviceId, deleting.id)
+      store.removeTopic(deleting)
+      setDeleting(null)
+      setSelected(null)
+      setNotice('Topic deleted.')
+    } catch (err) { setError(err.message || 'Could not delete topic.') }
+    finally { setBusy(false) }
   }
-
-  async function handleSubmit(event) {
-    event.preventDefault()
-    setMessage('')
-    setErrorMessage('')
-
-    if (!selectedDeviceId) {
-      setErrorMessage('Select a device before managing rules.')
-      return
-    }
-
-    const topic = normalizeTopicInput(form.topic)
-
-    if (!topic) {
-      setErrorMessage('Topic is required.')
-      return
-    }
-
-    setIsSubmitting(true)
-
-    try {
-      const payload = {
-        topic,
-        permission: form.permission,
-      }
-
-      if (editingRuleId) {
-        const response = await updateDeviceRule(selectedDeviceId, editingRuleId, payload)
-        setMessage(response.message || 'Rule updated.')
-      } else {
-        const response = await createDeviceRule(selectedDeviceId, payload)
-        setMessage(response.message || 'Rule added.')
-      }
-
-      resetForm()
-      await reloadRules()
-    } catch (error) {
-      setErrorMessage(error.message || 'Failed to save rule.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  function handleEdit(rule) {
-    setMessage('')
-    setErrorMessage('')
-    setEditingRuleId(rule.id)
-    setForm({
-      topic: stripTopicPrefix(rule.topic, userId),
-      permission: rule.permission || 'publish',
-    })
-  }
-
-  async function handleDelete(ruleId) {
-    if (!selectedDeviceId) {
-      return
-    }
-
-    setMessage('')
-    setErrorMessage('')
-
-    try {
-      const response = await deleteDeviceRule(selectedDeviceId, ruleId)
-      setMessage(response.message || 'Rule deleted.')
-
-      if (editingRuleId === ruleId) {
-        resetForm()
-      }
-
-      await reloadRules()
-    } catch (error) {
-      setErrorMessage(error.message || 'Failed to delete rule.')
-    }
-  }
-
-  return (
-    <section className="dashboard-section">
-      <header className="dashboard-section-header">
-        <div>
-          <h2>Topic Rules</h2>
-          <p>Create ACL rules per device. The `/iot/{userId}` prefix is fixed from your login session.</p>
-        </div>
-
-        <button
-          className="dashboard-secondary-button"
-          type="button"
-          onClick={() => reloadRules()}
-          disabled={!selectedDeviceId || isLoadingRules}
-        >
-          Refresh
-        </button>
-      </header>
-
-      <div className="dashboard-grid">
-        <article className="dashboard-card">
-          <h3>{editingRuleId ? `Edit Rule #${editingRuleId}` : 'Create Rule'}</h3>
-          <form className="dashboard-form" onSubmit={handleSubmit}>
-            <label htmlFor="topic-device">
-              Device
-              <select
-                id="topic-device"
-                value={selectedDeviceId}
-                onChange={(event) => {
-                  setSelectedDeviceId(event.target.value)
-                  setMessage('')
-                  setErrorMessage('')
-                  resetForm()
-                }}
-                disabled={isLoadingDevices || devices.length === 0}
-              >
-                <option value="">Select device</option>
-                {devices.map((device) => (
-                  <option key={device.id} value={device.id}>
-                    {device.username || `Device #${device.id}`} (ID: {device.id})
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label htmlFor="rule-permission">
-              Permission
-              <select
-                id="rule-permission"
-                value={form.permission}
-                onChange={(event) => updateForm('permission', event.target.value)}
-              >
-                {permissions.map((permission) => (
-                  <option key={permission} value={permission}>
-                    {permission}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label htmlFor="rule-topic">
-              Topic
-              <div className="dashboard-topic-input">
-                <span className="dashboard-topic-prefix">{topicPrefix}</span>
-                <input
-                  id="rule-topic"
-                  value={form.topic}
-                  onChange={(event) => updateForm('topic', event.target.value)}
-                  placeholder="sensors/+/humidity"
-                  required
-                />
-              </div>
-            </label>
-
-            <p className="dashboard-topic-helper">Enter only the topic suffix after the fixed user path.</p>
-
-            <div className="dashboard-form-actions">
-              <button className="dashboard-primary-button" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Saving...' : editingRuleId ? 'Update Rule' : 'Add Rule'}
-              </button>
-
-              {editingRuleId ? (
-                <button
-                  className="dashboard-secondary-button"
-                  type="button"
-                  onClick={resetForm}
-                  disabled={isSubmitting}
-                >
-                  Cancel Edit
-                </button>
-              ) : null}
-            </div>
-          </form>
-
-          {errorMessage ? <p className="dashboard-message dashboard-message-error">{errorMessage}</p> : null}
-          {message ? <p className="dashboard-message dashboard-message-success">{message}</p> : null}
-        </article>
-
-        <article className="dashboard-card">
-          <h3>Rules</h3>
-          {isLoadingDevices ? (
-            <p className="dashboard-muted">Loading devices...</p>
-          ) : devices.length === 0 ? (
-            <p className="dashboard-muted">Create a device first to manage ACL rules.</p>
-          ) : !selectedDeviceId ? (
-            <p className="dashboard-muted">Select a device to view rules.</p>
-          ) : isLoadingRules ? (
-            <p className="dashboard-muted">Loading rules...</p>
-          ) : rules.length === 0 ? (
-            <p className="dashboard-muted">No rules found for this device.</p>
-          ) : (
-            <div className="dashboard-table-wrap">
-              <table className="dashboard-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Permission</th>
-                    <th>Topic</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rules.map((rule) => (
-                    <tr key={rule.id}>
-                      <td>{rule.id}</td>
-                      <td>{rule.permission}</td>
-                      <td className="dashboard-truncate">{rule.topic}</td>
-                      <td>
-                        <div className="dashboard-row-actions">
-                          <button type="button" onClick={() => handleEdit(rule)}>
-                            Edit
-                          </button>
-                          <button type="button" onClick={() => handleDelete(rule.id)}>
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </article>
+  return <section className="dashboard-section">
+    <header className="dashboard-section-header"><div><h2>Topics <span className="workspace-count">{topics?.length ?? '—'}</span></h2><p>Topic access rules</p></div><div className="dashboard-form-actions"><button className="dashboard-secondary-button" onClick={() => store.loadTopics(true)} disabled={topicsLoading}>{topicsLoading ? 'Refreshing…' : 'Refresh'}</button><button className="dashboard-secondary-button" onClick={() => setAddingDevice(true)}>+ Add device</button><button className="dashboard-primary-button" onClick={() => setEditor({})} disabled={!devices?.length || topics === null || topicsLoading}>+ Add topic</button></div></header>
+    {topicsError && <p role="alert" className="dashboard-message dashboard-message-error">{topicsError}</p>}
+    {notice && <p role="status" className="dashboard-message dashboard-message-success">{notice}</p>}
+    <article className="dashboard-card workspace-table-card">
+      <div className="workspace-filters">
+        <label className="workspace-search">Search topics<input type="search" placeholder="Topic or device name" value={search} onChange={e => changeParam('q', e.target.value)} /></label>
+        <label>Device<select value={deviceId} onChange={e => changeParam('device', e.target.value)}><option value="">All devices</option>{(devices ?? []).map(device => <option key={device.id} value={device.id}>{device.username} (#{device.id})</option>)}</select></label>
+        <label>Permission<select value={permission} onChange={e => changeParam('permission', e.target.value)}><option value="">All permissions</option>{Object.entries(permissionLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+        {(search || deviceId || permission) && <button className="workspace-text-button" onClick={() => setParams({}, { replace: true })}>Clear filters</button>}
       </div>
-    </section>
-  )
+      <div className="dashboard-table-wrap"><table className="dashboard-table workspace-data-table">
+        <caption className="workspace-sr-only">Topic access rules for all devices. Select a topic for details.</caption>
+        <thead><tr><th scope="col">Topic</th><th scope="col">Device name</th><th scope="col">Permission</th><th scope="col">Actions</th></tr></thead>
+        <tbody>{rows.map(topic => <tr className="workspace-clickable-row" key={`${topic.deviceId}-${topic.id}`} onClick={e => { if (!e.target.closest('button, a')) setSelected(topic) }}>
+          <td><button className="workspace-name-button workspace-topic-name" onClick={() => setSelected(topic)}>{topic.topic}</button></td><td><Link to={`/iotroot/dashboard/devices?device=${topic.deviceId}`}>{deviceName(topic.deviceId)}</Link></td><td><span className="workspace-permission">{permissionLabels[topic.permission] ?? topic.permission}</span></td><td><button className="dashboard-inline-action" disabled={topicsLoading} aria-label={`Edit ${topic.topic}`} onClick={() => setEditor(topic)}>Edit</button></td>
+        </tr>)}{!rows.length && <tr><td colSpan={4}><div className="workspace-table-empty">{topics === null ? topicsError ? 'Topics unavailable. Try Refresh.' : 'Loading topics…' : !devices?.length ? 'Add a device to create topic rules.' : topics.length ? 'No topics match your filters.' : 'No topic rules yet. Add your first topic.'}</div></td></tr>}</tbody>
+      </table></div><footer className="workspace-table-footer">{rows.length} of {topics?.length ?? 0} topics</footer>
+    </article>
+    {editor && <TopicForm key={editor.id ?? 'new'} topic={editor.id != null ? editor : null} defaultDeviceId={deviceId} onClose={() => setEditor(null)} onSaved={() => { setNotice(editor.id != null ? 'Topic updated.' : 'Topic added.'); setEditor(null); setSelected(null) }} />}
+    {addingDevice && <DeviceForm onClose={() => setAddingDevice(false)} onSaved={device => { setAddingDevice(false); changeParam('device', String(device.id)); setNotice('Device added. You can now add a topic.') }} />}
+    {selected && !editor && !deleting && <WorkspaceDialog title="Topic details" onClose={() => setSelected(null)}>
+      <dl className="workspace-detail-list"><dt>Topic</dt><dd className="workspace-mono">{selected.topic}</dd><dt>Device</dt><dd><Link to={`/iotroot/dashboard/devices?device=${selected.deviceId}`}>{deviceName(selected.deviceId)}</Link></dd><dt>Permission</dt><dd>{permissionLabels[selected.permission]}</dd><dt>Rule ID</dt><dd>{selected.id}</dd></dl>
+      <div className="workspace-dialog-actions"><button className="workspace-danger-button" disabled={topicsLoading} onClick={() => { setError(''); setDeleting(selected) }}>Delete topic</button><button className="dashboard-primary-button" disabled={topicsLoading} onClick={() => setEditor(selected)}>Edit topic</button></div>
+    </WorkspaceDialog>}
+    {deleting && <WorkspaceDialog title="Delete topic?" onClose={() => setDeleting(null)} busy={busy}><p className="workspace-break-word">Remove <strong>{deleting.topic}</strong> from {deviceName(deleting.deviceId)}?</p>{error && <p role="alert" className="dashboard-message dashboard-message-error">{error}</p>}<div className="workspace-dialog-actions"><button className="dashboard-secondary-button" onClick={() => setDeleting(null)} disabled={busy}>Cancel</button><button className="workspace-danger-button" onClick={confirmDelete} disabled={busy}>{busy ? 'Deleting…' : 'Delete topic'}</button></div></WorkspaceDialog>}
+  </section>
 }

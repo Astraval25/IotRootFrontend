@@ -1,85 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  fetchDeviceConnectionStatus,
-  fetchDevices,
-  fetchUserUsageSummary,
-} from '../api/deviceApi'
-import { getAccessToken } from '../../auth/session/authSession'
-import { openDashboardSocket } from '../realtime/dashboardSocket'
+import { useWorkspace } from '../realtime/useWorkspace'
 
 export function DashboardOverviewPage() {
-  const [devices, setDevices] = useState([])
-  const [deviceStatuses, setDeviceStatuses] = useState({})
-  const [usageSummary, setUsageSummary] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [statusStream, setStatusStream] = useState('connecting')
-  const [lastUpdatedAt, setLastUpdatedAt] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-
-  useEffect(() => {
-    let isDisposed = false
-
-    async function loadOverview() {
-      try {
-        const [devicesResponse, statusResponse, usageResponse] = await Promise.all([
-          fetchDevices(),
-          fetchDeviceConnectionStatus(),
-          fetchUserUsageSummary(),
-        ])
-
-        if (isDisposed) {
-          return
-        }
-
-        setDevices(devicesResponse.data ?? [])
-        setDeviceStatuses(
-          Object.fromEntries((statusResponse.data ?? []).map((row) => [String(row.deviceId), row])),
-        )
-        setUsageSummary(usageResponse.data ?? null)
-        setLastUpdatedAt(new Date().toISOString())
-      } catch (error) {
-        if (!isDisposed) {
-          setErrorMessage(error.message || 'Failed to load dashboard overview.')
-        }
-      } finally {
-        if (!isDisposed) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    loadOverview()
-
-    return () => {
-      isDisposed = true
-    }
-  }, [])
-
-  useEffect(() => {
-    const token = getAccessToken()
-    if (!token) {
-      return undefined
-    }
-
-    return openDashboardSocket({
-      token,
-      onStatusChange: setStatusStream,
-      onEvent: (payload) => {
-        if (payload?.event === 'device_status_snapshot' && Array.isArray(payload?.data)) {
-          setDeviceStatuses(Object.fromEntries(payload.data.map((row) => [String(row.deviceId), row])))
-          setLastUpdatedAt(new Date().toISOString())
-          return
-        }
-
-        if (payload?.event === 'usage_overview_snapshot' && payload?.data) {
-          setUsageSummary(payload.data)
-          setLastUpdatedAt(new Date().toISOString())
-        }
-      },
-    })
-  }, [])
-
+  const { devices: cachedDevices, deviceStatuses, usageSummary, error: errorMessage, store, refreshing } = useWorkspace()
+  const devices = useMemo(() => cachedDevices ?? [], [cachedDevices])
+  const isLoading = cachedDevices === null
   const connectedDevices = useMemo(
     () => devices.filter((device) => deviceStatuses[String(device.id)]?.connected).length,
     [devices, deviceStatuses],
@@ -92,15 +18,6 @@ export function DashboardOverviewPage() {
     (usageSummary?.outboundEstimatedTotalBytes ?? 0)
   const inboundTransfer = usageSummary?.inboundEstimatedTotalBytes ?? 0
   const outboundTransfer = usageSummary?.outboundEstimatedTotalBytes ?? 0
-  const streamLabel =
-    statusStream === 'connected'
-      ? 'Live'
-      : statusStream === 'reconnecting'
-        ? 'Reconnecting'
-      : statusStream === 'connecting'
-        ? 'Connecting'
-        : statusStream
-
   return (
     <section className="dashboard-section">
       <header className="dashboard-section-header">
@@ -109,23 +26,9 @@ export function DashboardOverviewPage() {
           <p>Your devices at a glance.</p>
         </div>
 
-        <div className="dashboard-overview-meta">
-          <span
-            className={
-              statusStream === 'connected'
-                ? 'dashboard-device-status dashboard-device-status-online'
-                : 'dashboard-device-status dashboard-device-status-offline'
-            }
-          >
-            {streamLabel}
-          </span>
-          <span className="dashboard-muted">
-            {lastUpdatedAt ? `Updated ${formatRelativeTime(lastUpdatedAt)}` : 'Connecting…'}
-          </span>
-        </div>
       </header>
 
-      {errorMessage ? <p className="dashboard-message dashboard-message-error">{errorMessage}</p> : null}
+      {errorMessage ? <p role="alert" className="dashboard-message dashboard-message-error">{errorMessage} <button className="dashboard-secondary-button" onClick={() => store.refresh()} disabled={refreshing}>Retry</button></p> : null}
 
       
 
@@ -199,7 +102,7 @@ export function DashboardOverviewPage() {
           {isLoading ? (
             <p className="dashboard-muted">Loading device statuses...</p>
           ) : devices.length === 0 ? (
-            <div className="dashboard-empty-state"><span className="dashboard-empty-icon" aria-hidden="true">+</span><h3>Connect your first device</h3><Link className="dashboard-primary-button dashboard-link-button" to="/iotroot/dashboard/devices">Add device</Link></div>
+            <div className="dashboard-empty-state"><span className="dashboard-empty-icon" aria-hidden="true">+</span><h3>Connect your first device</h3><Link className="dashboard-primary-button dashboard-link-button" to="/iotroot/dashboard/devices?add=1">Add device</Link></div>
           ) : (
             <div className="dashboard-overview-device-list">
               {devices.slice(0, 6).map((device) => {
@@ -209,7 +112,7 @@ export function DashboardOverviewPage() {
                   <Link
                     key={device.id}
                     className="dashboard-overview-device-item"
-                    to="/iotroot/dashboard/devices"
+                    to={`/iotroot/dashboard/devices?device=${device.id}`}
                   >
                     <div>
                       <strong>{device.username || `Device #${device.id}`}</strong>
@@ -219,10 +122,10 @@ export function DashboardOverviewPage() {
                       className={
                         status?.connected
                           ? 'dashboard-device-status dashboard-device-status-online'
-                          : 'dashboard-device-status dashboard-device-status-offline'
+                          : status ? 'dashboard-device-status dashboard-device-status-offline' : 'dashboard-device-status workspace-status-unknown'
                       }
                     >
-                      {status?.connected ? 'Connected' : 'Disconnected'}
+                      {status?.connected ? 'Connected' : status ? 'Disconnected' : 'Unknown'}
                     </span>
                   </Link>
                 )
@@ -271,25 +174,4 @@ function formatCount(value) {
   }
 
   return new Intl.NumberFormat('en-US').format(count)
-}
-
-function formatRelativeTime(value) {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) {
-    return 'just now'
-  }
-
-  const differenceMs = Date.now() - date.getTime()
-  const seconds = Math.max(1, Math.round(differenceMs / 1000))
-  if (seconds < 60) {
-    return `${seconds}s ago`
-  }
-
-  const minutes = Math.round(seconds / 60)
-  if (minutes < 60) {
-    return `${minutes}m ago`
-  }
-
-  const hours = Math.round(minutes / 60)
-  return `${hours}h ago`
 }
