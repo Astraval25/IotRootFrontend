@@ -20,6 +20,7 @@ export function DeviceForm({ device, onClose, onSaved }) {
       if (device && !payload.password) delete payload.password
       const response = device ? await updateDevice(device.id, payload) : await createDevice(payload)
       store.upsertDevice(response.data)
+      if (payload.password) store.rememberDevicePassword(response.data.id, payload.password)
       onSaved(response.data)
     } catch (err) { setError(err.message || 'Could not save device.') }
     finally { setBusy(false) }

@@ -4,8 +4,8 @@
   font-family: 'Inter', 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #242620;
-  background-color: #f7f8f5;
+  color: #1e293b;
+  background-color: #f7f9fc;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -24,7 +24,7 @@ body {
 }
 
 a {
-  color: #947000;
+  color: #0e5fd8;
   text-decoration: none;
   font-weight: 600;
 }
@@ -67,7 +67,7 @@ a:hover {
 
 .auth-brand-kicker {
   margin: 0;
-  color: #947000;
+  color: #0e5fd8;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -124,10 +124,10 @@ a:hover {
   width: 100%;
   border-radius: 12px;
   border: 1px solid #dedfd8;
-  background: #f7f8f5;
+  background: #f7f9fc;
   padding: 0.72rem 0.8rem;
   font: inherit;
-  color: #242620;
+  color: #1e293b;
   transition: border-color 0.2s ease;
 }
 
@@ -157,19 +157,19 @@ a:hover {
 }
 
 .auth-eye-toggle:hover {
-  background: #f6edcf;
+  background: #eaf2ff;
   color: #5f6259;
 }
 
 .auth-eye-toggle:focus-visible {
-  outline: 2px solid #947000;
+  outline: 2px solid #0e5fd8;
   outline-offset: 2px;
 }
 
 .auth-input:focus,
 .waitlist-field input:focus {
   outline: none;
-  border-color: #947000;
+  border-color: #0e5fd8;
 }
 
 .auth-button,
@@ -187,14 +187,14 @@ a:hover {
 .auth-button,
 .waitlist-button {
   color: #ffffff;
-  background: linear-gradient(110deg, #947000, #947000);
-  box-shadow: 0 10px 20px rgba(148, 112, 0, 0.26);
+  background: linear-gradient(110deg, #0e5fd8, #0e5fd8);
+  box-shadow: 0 10px 20px rgba(14, 95, 216, 0.26);
 }
 
 .auth-secondary-button {
   margin-top: 0.75rem;
   color: #5f6259;
-  background: #f6edcf;
+  background: #eaf2ff;
 }
 
 .auth-button:hover,
@@ -260,7 +260,7 @@ a:hover {
   width: 280px;
   height: 280px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(148, 112, 0, 0.25), transparent 70%);
+  background: radial-gradient(circle, rgba(14, 95, 216, 0.25), transparent 70%);
   pointer-events: none;
 }
 
@@ -270,7 +270,7 @@ a:hover {
   letter-spacing: 0.08em;
   font-size: 0.78rem;
   font-weight: 800;
-  color: #947000;
+  color: #0e5fd8;
 }
 
 .waitlist-card h1 {
@@ -298,7 +298,7 @@ a:hover {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 250px 1fr;
-  background: #f7f8f5;
+  background: #f7f9fc;
 }
 
 .dashboard-sidebar {
@@ -337,7 +337,7 @@ a:hover {
 }
 
 .dashboard-nav-link.active {
-  background: #947000;
+  background: #0e5fd8;
   color: #ffffff;
 }
 
@@ -381,7 +381,7 @@ a:hover {
 
 .dashboard-chip {
   border: 1px solid #dedfd8;
-  background: #f6edcf;
+  background: #eaf2ff;
   color: #5f6259;
   border-radius: 999px;
   padding: 0.4rem 0.7rem;
@@ -477,13 +477,13 @@ a:hover {
   padding: 0.65rem 0.75rem;
   font: inherit;
   background: #ffffff;
-  color: #242620;
+  color: #1e293b;
 }
 
 .dashboard-form input:focus,
 .dashboard-form select:focus {
   outline: none;
-  border-color: #947000;
+  border-color: #0e5fd8;
 }
 
 .dashboard-topic-input {
@@ -491,19 +491,19 @@ a:hover {
   min-width: 0;
   border: 1px solid #dedfd8;
   border-radius: 10px;
-  background: #f7f8f5;
+  background: #f7f9fc;
   overflow: hidden;
 }
 
 .dashboard-topic-input:focus-within {
-  border-color: #947000;
+  border-color: #0e5fd8;
 }
 
 .dashboard-topic-prefix {
   display: inline-flex;
   align-items: center;
   padding: 0.65rem 0.75rem;
-  background: #f6edcf;
+  background: #eaf2ff;
   color: #5f6259;
   border-right: 1px solid #dedfd8;
   font-weight: 700;
@@ -545,7 +545,7 @@ a:hover {
 
 .dashboard-primary-button {
   color: #ffffff;
-  background: #947000;
+  background: #0e5fd8;
 }
 
 .dashboard-primary-button:disabled {
@@ -555,7 +555,7 @@ a:hover {
 
 .dashboard-secondary-button {
   color: #5f6259;
-  background: #f6edcf;
+  background: #eaf2ff;
 }
 
 .dashboard-message {
@@ -604,7 +604,7 @@ a:hover {
 
 .dashboard-row-actions button {
   border: 1px solid #dedfd8;
-  background: #f7f8f5;
+  background: #f7f9fc;
   color: #5f6259;
   border-radius: 8px;
   padding: 0.3rem 0.5rem;
@@ -614,7 +614,7 @@ a:hover {
 
 .dashboard-inline-action {
   border: 1px solid #dedfd8;
-  background: #f7f8f5;
+  background: #f7f9fc;
   color: #5f6259;
   border-radius: 8px;
   padding: 0.3rem 0.55rem;
@@ -651,7 +651,7 @@ a:hover {
 }
 
 .dashboard-row-selected {
-  background: #f7f8f5;
+  background: #f7f9fc;
 }
 
 .dashboard-details-card {
@@ -676,13 +676,13 @@ a:hover {
   border: 1px solid #dedfd8;
   border-radius: 18px;
   background:
-    radial-gradient(circle at top right, rgba(148, 112, 0, 0.14), transparent 30%),
+    radial-gradient(circle at top right, rgba(14, 95, 216, 0.14), transparent 30%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 248, 255, 0.96));
 }
 
 .dashboard-overview-kicker {
   margin: 0 0 0.45rem;
-  color: #947000;
+  color: #0e5fd8;
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -726,7 +726,7 @@ a:hover {
 }
 
 .dashboard-overview-card strong {
-  color: #242620;
+  color: #1e293b;
   font-size: 1.55rem;
   line-height: 1.1;
 }
@@ -770,19 +770,19 @@ a:hover {
   padding: 0.85rem 0.95rem;
   border: 1px solid #dedfd8;
   border-radius: 12px;
-  background: #f7f8f5;
-  color: #242620;
+  background: #f7f9fc;
+  color: #1e293b;
 }
 
 .dashboard-overview-device-item:hover {
   text-decoration: none;
   border-color: #dedfd8;
-  background: #f7f8f5;
+  background: #f7f9fc;
 }
 
 .dashboard-overview-device-item strong {
   display: block;
-  color: #242620;
+  color: #1e293b;
 }
 
 .dashboard-overview-device-item span {
@@ -811,7 +811,7 @@ a:hover {
 .dashboard-details-badge {
   border-radius: 999px;
   padding: 0.35rem 0.65rem;
-  background: #f6edcf;
+  background: #eaf2ff;
   color: #5f6259;
   font-size: 0.82rem;
   font-weight: 800;
@@ -827,7 +827,7 @@ a:hover {
   border: 1px solid #dedfd8;
   border-radius: 12px;
   padding: 0.75rem;
-  background: #f7f8f5;
+  background: #f7f9fc;
   display: grid;
   gap: 0.45rem;
 }
@@ -841,7 +841,7 @@ a:hover {
 }
 
 .dashboard-detail-item strong {
-  color: #242620;
+  color: #1e293b;
   font-size: 0.95rem;
   overflow-wrap: anywhere;
 }
@@ -856,7 +856,7 @@ a:hover {
   border: 1px solid #dedfd8;
   border-radius: 12px;
   padding: 0.85rem;
-  background: #f7f8f5;
+  background: #f7f9fc;
   display: grid;
   gap: 0.65rem;
 }
@@ -875,8 +875,8 @@ a:hover {
 .dashboard-cli-block {
   border: 1px solid #dedfd8;
   border-radius: 10px;
-  background: #f7f8f5;
-  color: #242620;
+  background: #f7f9fc;
+  color: #1e293b;
   padding: 0.75rem;
   overflow-x: auto;
   font-size: 0.82rem;
@@ -906,7 +906,7 @@ a:hover {
   padding: 0.9rem;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 248, 255, 0.94)),
-    #f7f8f5;
+    #f7f9fc;
   display: grid;
   gap: 0.35rem;
 }
@@ -920,7 +920,7 @@ a:hover {
 }
 
 .dashboard-usage-stat strong {
-  color: #242620;
+  color: #1e293b;
   font-size: 1.35rem;
   line-height: 1.1;
 }
@@ -945,7 +945,7 @@ a:hover {
   border: 1px solid #dedfd8;
   border-radius: 14px;
   padding: 0.95rem;
-  background: #f7f8f5;
+  background: #f7f9fc;
   display: grid;
   gap: 0.8rem;
 }
@@ -969,7 +969,7 @@ a:hover {
 .dashboard-usage-bar-track {
   height: 14px;
   border-radius: 999px;
-  background: #f6edcf;
+  background: #eaf2ff;
   overflow: hidden;
   display: flex;
 }
@@ -979,11 +979,11 @@ a:hover {
 }
 
 .dashboard-usage-bar-inbound {
-  background: linear-gradient(90deg, #947000, #947000);
+  background: linear-gradient(90deg, #0e5fd8, #0e5fd8);
 }
 
 .dashboard-usage-bar-outbound {
-  background: linear-gradient(90deg, #d6b957, #d6b957);
+  background: linear-gradient(90deg, #80b4ff, #80b4ff);
 }
 
 .dashboard-usage-legend {
@@ -1002,7 +1002,7 @@ a:hover {
 }
 
 .dashboard-usage-legend strong {
-  color: #242620;
+  color: #1e293b;
   font-size: 0.92rem;
 }
 
@@ -1019,11 +1019,11 @@ a:hover {
 }
 
 .dashboard-usage-dot-inbound {
-  background: #947000;
+  background: #0e5fd8;
 }
 
 .dashboard-usage-dot-outbound {
-  background: #d6b957;
+  background: #80b4ff;
 }
 
 .dashboard-usage-kpis {
@@ -1049,7 +1049,7 @@ a:hover {
 }
 
 .dashboard-usage-kpis strong {
-  color: #242620;
+  color: #1e293b;
   font-size: 1rem;
 }
 
@@ -1062,7 +1062,7 @@ a:hover {
   border: 1px solid #dedfd8;
   border-radius: 14px;
   padding: 0.9rem;
-  background: #f7f8f5;
+  background: #f7f9fc;
   display: grid;
   gap: 0.55rem;
 }
@@ -1076,7 +1076,7 @@ a:hover {
 
 .dashboard-usage-activity-head strong {
   display: block;
-  color: #242620;
+  color: #1e293b;
   font-size: 0.95rem;
 }
 
@@ -1096,7 +1096,7 @@ a:hover {
 .dashboard-usage-activity-bar {
   height: 10px;
   border-radius: 999px;
-  background: #f6edcf;
+  background: #eaf2ff;
   overflow: hidden;
 }
 
@@ -1169,7 +1169,7 @@ a:hover {
 }
 
 .auth-brand-metrics strong {
-  color: #242620;
+  color: #1e293b;
   font-size: 0.95rem;
 }
 
@@ -1221,7 +1221,7 @@ a:hover {
 }
 
 .waitlist-stats strong {
-  color: #242620;
+  color: #1e293b;
 }
 
 .waitlist-stats span {
@@ -1236,7 +1236,7 @@ a:hover {
 .dashboard-subcard {
   padding: 0;
   border-radius: 14px;
-  background: #f7f8f5;
+  background: #f7f9fc;
 }
 
 .dashboard-subcard h5 {
@@ -1274,8 +1274,8 @@ a:hover {
 
 .landing-page {
   min-height: 100vh;
-  background: #f7f8f5;
-  color: #242620;
+  background: #f7f9fc;
+  color: #1e293b;
 }
 
 .landing-nav {
@@ -1297,7 +1297,7 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  color: #242620;
+  color: #1e293b;
   text-decoration: none;
 }
 
@@ -1315,7 +1315,7 @@ a:hover {
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 8px;
-  background: #947000;
+  background: #0e5fd8;
   color: #ffffff;
   font-size: 0.82rem;
   font-weight: 800;
@@ -1369,7 +1369,7 @@ a:hover {
 .landing-cta h2,
 .landing-lead-section h2 {
   margin: 0;
-  color: #242620;
+  color: #1e293b;
   line-height: 1.04;
 }
 
@@ -1393,7 +1393,7 @@ a:hover {
 
 .landing-kicker {
   margin: 0 0 0.7rem;
-  color: #947000;
+  color: #0e5fd8;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -1434,9 +1434,9 @@ a:hover {
 }
 
 .landing-button-primary {
-  background: #947000;
+  background: #0e5fd8;
   color: #ffffff;
-  box-shadow: 0 14px 28px rgba(148, 112, 0, 0.24);
+  box-shadow: 0 14px 28px rgba(14, 95, 216, 0.24);
 }
 
 .landing-button-secondary {
@@ -1501,7 +1501,7 @@ a:hover {
   margin: 0;
   border: 1px solid #dedfd8;
   border-radius: 8px;
-  background: #f7f8f5;
+  background: #f7f9fc;
   padding: 0.7rem;
   font-weight: 800;
 }
@@ -1568,7 +1568,7 @@ a:hover {
   border: 1px solid #dedfd8;
   border-radius: 8px;
   padding: 0.85rem;
-  background: #f7f8f5;
+  background: #f7f9fc;
   display: grid;
   gap: 0.25rem;
 }
@@ -1590,14 +1590,14 @@ a:hover {
   border: 1px solid #dedfd8;
   border-radius: 8px;
   padding: 0.9rem;
-  background: #f7f8f5;
+  background: #f7f9fc;
 }
 
 .landing-trigger-preview {
   border: 1px solid #dedfd8;
   border-radius: 8px;
   padding: 0.85rem;
-  background: #f7f8f5;
+  background: #f7f9fc;
   display: grid;
   gap: 0.55rem;
 }
@@ -1667,12 +1667,12 @@ a:hover {
 .landing-signal-bars i {
   width: 9px;
   border-radius: 999px 999px 0 0;
-  background: #947000;
+  background: #0e5fd8;
   transition: height 0.45s ease;
 }
 
 .landing-signal-bars i:last-child {
-  background: #d6b957;
+  background: #80b4ff;
 }
 
 .landing-device-row .landing-status-warning {
@@ -1731,13 +1731,13 @@ a:hover {
 
 .landing-card p {
   margin: 0;
-  color: #242620;
+  color: #1e293b;
   font-weight: 700;
 }
 
 .landing-card-strong {
   border-color: #dedfd8;
-  background: #f7f8f5;
+  background: #f7f9fc;
 }
 
 .landing-card-icon {
@@ -1747,8 +1747,8 @@ a:hover {
   width: 1.8rem;
   height: 1.8rem;
   border-radius: 8px;
-  background: #f6edcf;
-  color: #947000;
+  background: #eaf2ff;
+  color: #0e5fd8;
   font-weight: 900;
 }
 
@@ -1767,7 +1767,7 @@ a:hover {
   position: relative;
   border: 1px solid #dedfd8;
   border-radius: 8px;
-  background: #242620;
+  background: #1e293b;
   color: #ffffff;
   overflow: hidden;
   display: grid;
@@ -1800,7 +1800,7 @@ a:hover {
   height: 2rem;
   border-radius: 8px;
   background: #ffffff;
-  color: #242620;
+  color: #1e293b;
   font-weight: 900;
 }
 
@@ -1817,7 +1817,7 @@ a:hover {
   border: none;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.94);
-  color: #242620;
+  color: #1e293b;
   padding: 0.52rem 0.72rem;
   font: inherit;
   font-size: 0.86rem;
@@ -1898,7 +1898,7 @@ a:hover {
   width: 0.7rem;
   height: 0.7rem;
   border-radius: 999px;
-  background: #d6b957;
+  background: #80b4ff;
   flex: 0 0 auto;
 }
 
@@ -1928,14 +1928,14 @@ a:hover {
 }
 
 .landing-price-card span {
-  color: #947000;
+  color: #0e5fd8;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .landing-price-card strong {
-  color: #242620;
+  color: #1e293b;
   font-size: 2rem;
 }
 
@@ -2005,8 +2005,8 @@ a:hover {
   width: 100%;
   border: 1px solid #dedfd8;
   border-radius: 8px;
-  background: #f7f8f5;
-  color: #242620;
+  background: #f7f9fc;
+  color: #1e293b;
   padding: 0.72rem 0.8rem;
   font: inherit;
 }
@@ -2018,7 +2018,7 @@ a:hover {
 .landing-lead-form input:focus,
 .landing-lead-form textarea:focus {
   outline: none;
-  border-color: #947000;
+  border-color: #0e5fd8;
 }
 
 .landing-form-message {
@@ -2049,7 +2049,7 @@ a:hover {
 
 .landing-footer span {
   margin-right: auto;
-  color: #242620;
+  color: #1e293b;
   font-weight: 900;
 }
 

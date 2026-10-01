@@ -11,6 +11,8 @@ export function createWorkspaceStore(api, openSocket) {
   let workspaceRequest = null
   let topicsRequest = null
   const usageRequests = new Map()
+  // Raw credentials stay in this signed-in workspace only, never in browser storage.
+  const devicePasswords = new Map()
   let statusVersion = 0
   let overviewVersion = 0
   let devicesVersion = 0
@@ -123,8 +125,14 @@ export function createWorkspaceStore(api, openSocket) {
       workspaceRequest = null
       topicsRequest = null
       usageRequests.clear()
+      devicePasswords.clear()
     },
     refresh, loadTopics, loadUsage,
+    getDevicePassword(deviceId) { return devicePasswords.get(String(deviceId)) ?? '' },
+    rememberDevicePassword(deviceId, password) {
+      if (password) devicePasswords.set(String(deviceId), password)
+      else devicePasswords.delete(String(deviceId))
+    },
     upsertDevice(device) {
       devicesVersion += 1
       const exists = state.devices?.some(row => String(row.id) === String(device.id))
@@ -134,6 +142,7 @@ export function createWorkspaceStore(api, openSocket) {
       devicesVersion += 1
       topicsVersion += 1
       const id = String(deviceId)
+      devicePasswords.delete(id)
       const deviceStatuses = { ...state.deviceStatuses }
       const usageByDevice = { ...state.usageByDevice }
       delete deviceStatuses[id]

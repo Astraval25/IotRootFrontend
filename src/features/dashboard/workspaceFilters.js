@@ -2,6 +2,14 @@ export function deviceStatus(status) {
   return typeof status?.connected !== 'boolean' ? 'unknown' : status.connected ? 'connected' : 'disconnected'
 }
 
+export function countTopicsByDevice(topics) {
+  return topics.reduce((counts, topic) => {
+    const id = String(topic.deviceId)
+    counts[id] = (counts[id] ?? 0) + 1
+    return counts
+  }, {})
+}
+
 export function filterDevices(devices, statuses, { search = '', status = '' }) {
   const term = search.trim().toLowerCase()
   return devices.filter(device => (!status || deviceStatus(statuses[String(device.id)]) === status) &&

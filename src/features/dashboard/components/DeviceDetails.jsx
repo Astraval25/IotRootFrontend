@@ -1,21 +1,19 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { API_BASE_URL } from '../../../shared/config/env'
-import { getCurrentUserId } from '../../auth/session/authSession'
 import { useWorkspace } from '../realtime/useWorkspace'
 
 export function DeviceDetails({ device: selectedDevice }) {
-  const { deviceStatuses, usageByDevice, topics, store } = useWorkspace()
+  const { deviceStatuses, usageByDevice, store } = useWorkspace()
   const selectedDeviceId = String(selectedDevice.id)
   const usage = usageByDevice[selectedDeviceId]
   const selectedDeviceUsageSummary = usage?.summary
   const selectedDeviceUsageBuckets = usage?.buckets ?? []
-  const selectedDeviceRules = (topics ?? []).filter(rule => String(rule.deviceId) === selectedDeviceId)
   const isLoadingUsage = !usage || usage.loading
   const isLoadingStatus = false
   const [copiedKey, setCopiedKey] = useState('')
   const [copyError, setCopyError] = useState('')
-  useEffect(() => { store.loadUsage(selectedDeviceId); store.loadTopics() }, [store, selectedDeviceId])
+  useEffect(() => { store.loadUsage(selectedDeviceId) }, [store, selectedDeviceId])
   async function copyText(key, text) {
     try { await navigator.clipboard.writeText(text); setCopiedKey(key); setCopyError('') }
     catch { setCopyError('Could not copy. Select and copy the text instead.') }
@@ -30,21 +28,7 @@ export function DeviceDetails({ device: selectedDevice }) {
   })()
   const brokerPort = String(selectedDeviceStatus?.brokerPort || 1883)
   const brokerUrl = `${brokerHost}:${brokerPort}`
-  const sampleTopic =
-    selectedDeviceRules[0]?.topic || `/iot/${getCurrentUserId() || 'userId'}/sample/topic`
-  const publishAllowed = selectedDeviceRules.filter(
-    (rule) => rule.permission === 'publish' || rule.permission === 'readwrite',
-  )
-  const subscribeAllowed = selectedDeviceRules.filter(
-    (rule) => rule.permission === 'subscribe' || rule.permission === 'readwrite',
-  )
-  const publishTopic = publishAllowed[0]?.topic || sampleTopic
-  const subscribeTopic = subscribeAllowed[0]?.topic || sampleTopic
-  const clientId = selectedDevice?.clientId || `device-${selectedDevice?.id || 'id'}`
-  const username = selectedDevice?.username || 'device_username'
-  const passwordPlaceholder = '<DEVICE_PASSWORD>'
-  const publishCommand = `mosquitto_pub -h ${brokerHost} -p ${brokerPort} -u "${username}" -P "${passwordPlaceholder}" -i "${clientId}" -t "${publishTopic}" -m "{\\"status\\":\\"ok\\"}" -q 1`
-  const subscribeCommand = `mosquitto_sub -h ${brokerHost} -p ${brokerPort} -u "${username}" -P "${passwordPlaceholder}" -i "${clientId}" -t "${subscribeTopic}" -q 1 -v`
+  const username = selectedDevice.username
   const inboundPayloadBytes = selectedDeviceUsageSummary?.inboundPayloadBytes ?? 0
   const outboundPayloadBytes = selectedDeviceUsageSummary?.outboundPayloadBytes ?? 0
   const inboundEstimatedBytes = selectedDeviceUsageSummary?.inboundEstimatedTotalBytes ?? 0
@@ -144,37 +128,7 @@ export function DeviceDetails({ device: selectedDevice }) {
               )}
             </section>
 
-            <Link className="dashboard-secondary-button dashboard-link-button" to={`/iotroot/dashboard/topics?device=${selectedDevice.id}`}>View topics</Link>
-
-            <div className="dashboard-cli-grid">
-              <section className="dashboard-cli-card">
-                <header>
-                  <h4>Publish Command</h4>
-                  <p>
-                    Permission source:{' '}
-                    {publishAllowed.length > 0 ? 'publish/readwrite rule found' : 'fallback topic (no publish rule)'}
-                  </p>
-                </header>
-                <code className="dashboard-cli-block">{publishCommand}</code>
-                <button type="button" className="dashboard-secondary-button" onClick={() => copyText('publish', publishCommand)}>
-                  {copiedKey === 'publish' ? 'Copied' : 'Copy Publish Command'}
-                </button>
-              </section>
-
-              <section className="dashboard-cli-card">
-                <header>
-                  <h4>Subscribe Command</h4>
-                  <p>
-                    Permission source:{' '}
-                    {subscribeAllowed.length > 0 ? 'subscribe/readwrite rule found' : 'fallback topic (no subscribe rule)'}
-                  </p>
-                </header>
-                <code className="dashboard-cli-block">{subscribeCommand}</code>
-                <button type="button" className="dashboard-secondary-button" onClick={() => copyText('subscribe', subscribeCommand)}>
-                  {copiedKey === 'subscribe' ? 'Copied' : 'Copy Subscribe Command'}
-                </button>
-              </section>
-            </div>
+            <Link className="dashboard-secondary-button dashboard-link-button" to={`/iotroot/dashboard/topics?device=${selectedDevice.id}`}>Topics & commands</Link>
 
             <section className="dashboard-rules-section">
               <h4>Usage · Last 24 hours</h4>
