@@ -28,11 +28,11 @@ export function AuthField({ label, id, type = 'text', value, onChange, placehold
   const inputType = isPasswordField && showPassword ? 'text' : type
 
   return (
-    <label className="auth-field" htmlFor={id}>
+    <label className="grid gap-2 text-[13px] font-semibold text-slate-700" htmlFor={id}>
       <span>{label}</span>
-      <div className="auth-input-wrap">
+      <div className="relative">
         <input
-          className="auth-input"
+          className="min-h-11 w-full rounded border border-slate-300 bg-white px-3.5 pr-11 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-[#8390fa] focus:ring-2 focus:ring-[#8390fa]/20"
           id={id}
           type={inputType}
           value={value}
@@ -44,7 +44,7 @@ export function AuthField({ label, id, type = 'text', value, onChange, placehold
 
         {isPasswordField ? (
           <button
-            className="auth-eye-toggle"
+            className="absolute inset-y-0 right-0 grid w-11 place-items-center border-0 bg-transparent text-slate-500 hover:text-[#1d2f6f]"
             type="button"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
             onClick={() => setShowPassword((currentValue) => !currentValue)}

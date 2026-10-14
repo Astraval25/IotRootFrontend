@@ -2,6 +2,11 @@ export const permissionLabels = { publish: 'Publish', subscribe: 'Subscribe', re
 
 export function quoteShellArgument(value, shell = 'bash') {
   const text = String(value)
+
+  if (/^[A-Za-z0-9_./:@%+=,-]+$/.test(text)) {
+    return text
+  }
+
   return shell === 'powershell' ? `'${text.replaceAll("'", "''")}'` : `'${text.replaceAll("'", "'\\''")}'`
 }
 

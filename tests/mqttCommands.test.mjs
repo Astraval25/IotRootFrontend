@@ -18,8 +18,8 @@ test('permissions produce only the allowed publish or subscribe commands', () =>
 
 test('commands include actual credentials, exact topic, broker and configured client ID', () => {
   const commands = buildTopicCommands(options)
-  assert.equal(commands[0].command, "mosquitto_pub -h 'broker.example.test' -p 1883 -u 'kitchen' -P 'device secret' -i 'client-7' -t '/iot/1/temperature' -m 'hello' -q 1")
-  assert.equal(commands[1].command, "mosquitto_sub -h 'broker.example.test' -p 1883 -u 'kitchen' -P 'device secret' -i 'client-7' -t '/iot/1/temperature' -q 1 -v")
+  assert.equal(commands[0].command, "mosquitto_pub -h broker.example.test -p 1883 -u kitchen -P 'device secret' -i client-7 -t /iot/1/temperature -m hello -q 1")
+  assert.equal(commands[1].command, "mosquitto_sub -h broker.example.test -p 1883 -u kitchen -P 'device secret' -i client-7 -t /iot/1/temperature -q 1 -v")
   assert.deepEqual(buildTopicCommands({ ...options, password: '' }), [])
   assert.deepEqual(buildTopicCommands({ ...options, port: '1883; bad' }), [])
   assert.deepEqual(buildTopicCommands({ ...options, device: { username: 'kitchen' } }), [])
@@ -29,6 +29,18 @@ test('shell quotes preserve apostrophes and shell metacharacters as literal cred
   assert.equal(quoteShellArgument("don't $expand `this`; & run"), "'don'\\''t $expand `this`; & run'")
   assert.equal(quoteShellArgument("don't $expand `this`; & run", 'powershell'), "'don''t $expand `this`; & run'")
   assert.equal(quoteShellArgument('space "quote" \\ path'), "'space \"quote\" \\ path'")
+})
+
+test('simple MQTT values use the same unquoted command format on every platform', () => {
+  const commandOptions = {
+    device: { username: 'app1', clientId: 'ae119da9-f012-48c7-8497-6d9f78da999d' },
+    rule: { topic: '/iot/4/device1', permission: 'subscribe' },
+    host: 'iotroot.astraval.com', port: 1883, password: 'app1',
+  }
+  const expected = 'mosquitto_sub -h iotroot.astraval.com -p 1883 -u app1 -P app1 -i ae119da9-f012-48c7-8497-6d9f78da999d -t /iot/4/device1 -q 1 -v'
+
+  assert.equal(buildTopicCommands(commandOptions)[0].command, expected)
+  assert.equal(buildTopicCommands({ ...commandOptions, shell: 'powershell' })[0].command, expected)
 })
 
 test('wildcard rules keep subscribe filter but require a matching concrete publish topic', () => {

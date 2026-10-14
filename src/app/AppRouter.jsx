@@ -7,8 +7,9 @@ import { ResetPasswordPage } from '../features/auth/pages/ResetPasswordPage'
 import { VerifyOtpPage } from '../features/auth/pages/VerifyOtpPage'
 import { DashboardLayout } from '../features/dashboard/components/DashboardLayout'
 import { DashboardDevicesPage } from '../features/dashboard/pages/DashboardDevicesPage'
+import { DashboardDevicePage } from '../features/dashboard/pages/DashboardDevicePage'
 import { DashboardOverviewPage } from '../features/dashboard/pages/DashboardOverviewPage'
-import { DashboardTopicsPage } from '../features/dashboard/pages/DashboardTopicsPage'
+import { DashboardSettingsPage } from '../features/dashboard/pages/DashboardSettingsPage'
 import { WorkspaceProvider } from '../features/dashboard/realtime/WorkspaceProvider'
 import { WaitlistPage } from '../features/waitlist/pages/WaitlistPage'
 
@@ -32,7 +33,10 @@ export function AppRouter() {
         >
           <Route index element={<DashboardOverviewPage />} />
           <Route path="devices" element={<DashboardDevicesPage />} />
-          <Route path="topics" element={<DashboardTopicsPage />} />
+          <Route path="devices/:deviceId" element={<DashboardDevicePage />} />
+          <Route path="devices/:deviceId/topics" element={<DashboardDevicePage />} />
+          <Route path="settings" element={<DashboardSettingsPage />} />
+          <Route path="topics" element={<Navigate to="/iotroot/dashboard/devices" replace />} />
           <Route path="*" element={<Navigate to="/iotroot/dashboard" replace />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -65,7 +65,7 @@ export function VerifyOtpPage() {
         { to: '/register', label: 'Need an account?' },
       ]}
     >
-      <form className="auth-form" onSubmit={handleVerify}>
+      <form className="grid gap-4" onSubmit={handleVerify}>
         <AuthField
           id="verify-email"
           label="Email"
@@ -86,12 +86,12 @@ export function VerifyOtpPage() {
           autoComplete="one-time-code"
         />
 
-        <button className="auth-button" type="submit" disabled={isVerifying}>
+        <button className="mt-1 min-h-11 rounded bg-[#1d2f6f] px-4 text-sm font-semibold text-white hover:bg-[#8390fa] disabled:opacity-50" type="submit" disabled={isVerifying}>
           {isVerifying ? 'Verifying...' : 'Verify OTP'}
         </button>
       </form>
 
-      <button className="auth-secondary-button" type="button" onClick={handleResend} disabled={isResending}>
+      <button className="mt-3 min-h-11 w-full rounded border border-slate-300 bg-white px-4 text-sm font-semibold text-[#1d2f6f] hover:bg-[#eef0ff] disabled:opacity-50" type="button" onClick={handleResend} disabled={isResending}>
         {isResending ? 'Resending...' : 'Resend OTP'}
       </button>
 

@@ -46,7 +46,7 @@ export function RegisterPage() {
         { to: '/', label: 'Back to waitlist' },
       ]}
     >
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form className="grid gap-4" onSubmit={handleSubmit}>
         <AuthField
           id="register-email"
           label="Email"
@@ -67,7 +67,7 @@ export function RegisterPage() {
           autoComplete="new-password"
         />
 
-        <button className="auth-button" type="submit" disabled={isSubmitting}>
+        <button className="mt-1 min-h-11 rounded bg-[#1d2f6f] px-4 text-sm font-semibold text-white hover:bg-[#8390fa] disabled:opacity-50" type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Registering...' : 'Register'}
         </button>
       </form>

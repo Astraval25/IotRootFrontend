@@ -39,7 +39,7 @@ export function LoginPage() {
         { to: '/forgot-password', label: 'Forgot password?' },
       ]}
     >
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form className="grid gap-4" onSubmit={handleSubmit}>
         <AuthField
           id="login-email"
           label="Email"
@@ -60,7 +60,7 @@ export function LoginPage() {
           autoComplete="current-password"
         />
 
-        <button className="auth-button" type="submit" disabled={isSubmitting}>
+        <button className="mt-1 min-h-11 rounded bg-[#1d2f6f] px-4 text-sm font-semibold text-white hover:bg-[#8390fa] disabled:opacity-50" type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
@@ -69,7 +69,7 @@ export function LoginPage() {
       <AuthFormMessage type="success" text={successMessage} />
 
       {errorMessage.includes('not verified') ? (
-        <Link className="auth-inline-link" to={`/verify-otp?email=${encodeURIComponent(email.trim())}`}>
+        <Link className="mt-4 inline-block text-sm font-semibold text-[#1d2f6f]" to={`/verify-otp?email=${encodeURIComponent(email.trim())}`}>
           Verify OTP
         </Link>
       ) : null}
