@@ -1,5 +1,10 @@
 const items = [
   {
+    id: 'api-keys',
+    label: 'API keys',
+    icon: <><circle cx="8" cy="12" r="3" /><path d="M11 12h9m-3 0v3m-3-3v2" /></>,
+  },
+  {
     id: 'service',
     label: 'Service',
     icon: <path d="M4 7h16M7 4v6m10-6v6M5 13h14v7H5zM9 16h2m2 0h2" />,
@@ -17,7 +22,7 @@ export function SettingsSideNavigation({ activeSection, onSectionChange }) {
       <div className="border-b border-[#eaeded] px-2 py-2">
         <h2 className="mt-1 text-xl font-semibold text-[#1d2f6f]">Settings</h2>
       </div>
-      <nav className="grid gap-2 p-2 max-[820px]:grid-cols-2">
+      <nav className="grid gap-2 p-2 max-[820px]:grid-cols-3">
         {items.map(item => {
           const isActive = activeSection === item.id
           return (

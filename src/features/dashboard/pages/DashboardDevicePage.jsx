@@ -132,9 +132,9 @@ export function DashboardDevicePage() {
                 <tbody>
                   {deviceTopics.map(topic => (
                     <tr className="cursor-pointer border-t border-slate-200 hover:bg-[#f7f8fc]" key={topic.id} onClick={() => setSelectedTopicId(topic.id)}>
-                      <td className="px-6 py-4 font-mono text-xs font-semibold text-[#1d2f6f]">{topic.topic}</td>
+                      <td className="px-6 py-4"><span className="block font-mono text-xs font-semibold text-[#1d2f6f]">{topic.topic}</span>{topic.topicType === 'STORE' && <span className="mt-1 inline-block rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">Stored JSON</span>}</td>
                       <td className="px-6 py-4"><span className="rounded bg-[#eef0ff] px-2 py-1 text-[11px] font-semibold text-[#1d2f6f]">{permissionLabels[topic.permission] ?? topic.permission}</span></td>
-                      <td className="px-6 py-4"><button className="font-semibold text-[#1d2f6f]" onClick={() => setSelectedTopicId(topic.id)}>View details →</button></td>
+                      <td className="px-6 py-4"><div className="flex gap-3"><button className="font-semibold text-[#1d2f6f]" onClick={() => setSelectedTopicId(topic.id)}>Details</button>{topic.topicType === 'STORE' && <Link className="font-semibold text-emerald-700" to={`/iotroot/dashboard/devices/${device.id}/topics/${topic.id}/data`} onClick={event => event.stopPropagation()}>View data →</Link>}</div></td>
                     </tr>
                   ))}
                   {!deviceTopics.length && <tr><td className="px-6 py-14 text-center text-sm text-slate-500" colSpan={3}>{topicsLoading || topics === null ? 'Loading topics…' : 'No topics yet. Add the first topic for this device.'}</td></tr>}
@@ -157,10 +157,12 @@ export function DashboardDevicePage() {
               <dl className="grid grid-cols-2 gap-4 rounded border border-slate-200 bg-[#f7f8fc] p-4 text-sm">
                 <div><dt className="text-xs text-slate-500">Device</dt><dd className="mt-1 font-semibold">{device.username}</dd></div>
                 <div><dt className="text-xs text-slate-500">Permission</dt><dd className="mt-1 font-semibold">{permissionLabels[selectedTopic.permission] ?? selectedTopic.permission}</dd></div>
+                <div><dt className="text-xs text-slate-500">Topic type</dt><dd className="mt-1 font-semibold">{selectedTopic.topicType === 'STORE' ? 'Stored JSON data' : 'Standard MQTT'}</dd></div>
                 <div className="col-span-2"><dt className="text-xs text-slate-500">Topic filter</dt><dd className="mt-1 break-all font-mono text-xs">{selectedTopic.topic}</dd></div>
               </dl>
               <TopicCommands key={`${device.id}-${selectedTopic.id}`} device={device} topic={selectedTopic} />
               <div className="flex justify-end gap-2 border-t border-slate-200 pt-5">
+                {selectedTopic.topicType === 'STORE' && <Link className={buttonSecondary} to={`/iotroot/dashboard/devices/${device.id}/topics/${selectedTopic.id}/data`}>View stored data</Link>}
                 <button className="rounded border border-red-200 bg-white px-3.5 py-2 text-[13px] text-red-700" onClick={() => setDeletingTopic(selectedTopic)}>Delete</button>
                 <button className={buttonPrimary} onClick={() => setEditingTopic(selectedTopic)}>Edit topic</button>
               </div>

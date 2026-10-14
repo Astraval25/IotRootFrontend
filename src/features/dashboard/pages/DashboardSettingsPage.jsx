@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { API_BASE_URL } from '../../../shared/config/env'
 import { clearSession, getAccessTokenPayload } from '../../auth/session/authSession'
 import { SettingsSideNavigation } from '../components/SettingsSideNavigation'
+import { ApiKeysSettings } from '../components/ApiKeysSettings'
 
 function getBrokerHost() {
   try {
@@ -29,6 +30,11 @@ export function DashboardSettingsPage() {
     ['Authentication', 'Device username and password'],
     ['Keep alive', '60 seconds recommended'],
   ]
+  const sectionCopy = {
+    service: ['Service', 'Common connection values used by every device in this IoTRoot workspace.'],
+    'api-keys': ['API keys', 'Create read-only credentials for the stored-data REST API.'],
+    account: ['Account', 'Review your signed-in account and session.'],
+  }
 
   async function copy(label, value) {
     await navigator.clipboard.writeText(value)
@@ -46,8 +52,8 @@ export function DashboardSettingsPage() {
 
       <div className="grid content-start gap-6 p-6 max-sm:p-4">
         <header>
-          <h1 className="m-0 text-2xl font-semibold tracking-tight text-[#1d2f6f]">{activeSection === 'service' ? 'Service' : 'Account'}</h1>
-          <p className="mt-1.5 text-[13px] text-slate-500">{activeSection === 'service' ? 'Common connection values used by every device in this IoTRoot workspace.' : 'Review your signed-in account and session.'}</p>
+          <h1 className="m-0 text-2xl font-semibold tracking-tight text-[#1d2f6f]">{sectionCopy[activeSection][0]}</h1>
+          <p className="mt-1.5 text-[13px] text-slate-500">{sectionCopy[activeSection][1]}</p>
         </header>
 
       {activeSection === 'service' ? <>
@@ -75,7 +81,7 @@ export function DashboardSettingsPage() {
           <pre className="mx-5 my-4 overflow-x-auto border border-[#d5dbdb] bg-[#f7f8fc] p-3.5"><code>{`mqtt://${brokerHost}:1883`}</code></pre>
           <p className="mx-5 my-4 text-sm text-slate-600">Credentials are unique to each device. Open a device to view its username and live session information.</p>
         </article>
-      </> : (
+      </> : activeSection === 'api-keys' ? <ApiKeysSettings /> : (
         <article className="border border-[#d5dbdb] bg-white shadow-sm">
           <header className="border-b border-[#eaeded] px-5 py-[18px]">
             <h3 className="m-0 text-[17px] font-semibold text-slate-900">Account details</h3>

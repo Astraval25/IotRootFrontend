@@ -1,8 +1,7 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { clearSession } from "../../auth/session/authSession";
+import { NavLink, Outlet } from "react-router-dom";
 import { useWorkspace } from "../realtime/useWorkspace";
 
-function Icon({ devices = false, settings = false }) {
+function Icon({ devices = false, settings = false, data = false, usage = false }) {
   return (
     <svg
       width="20"
@@ -13,7 +12,16 @@ function Icon({ devices = false, settings = false }) {
       strokeWidth="1.6"
       aria-hidden="true"
     >
-      {settings ? (
+      {usage ? (
+        <>
+          <path d="M4 20V10m6 10V4m6 16v-7m4 7H2" />
+        </>
+      ) : data ? (
+        <>
+          <path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3Z" />
+          <path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" />
+        </>
+      ) : settings ? (
         <>
           <circle cx="12" cy="12" r="3" />
           <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.17.38.38.72.7 1 .3.27.7.4 1.1.4h.09v4h-.09a1.7 1.7 0 0 0-1.8.6Z" />
@@ -37,7 +45,6 @@ function Icon({ devices = false, settings = false }) {
 }
 
 export function DashboardLayout() {
-  const navigate = useNavigate();
   const { statusStream } = useWorkspace();
   const navClass = ({ isActive }) =>
     `flex min-h-9 items-center gap-2.5 border-l-4 px-4 py-2 text-[13px] no-underline ${isActive ? "border-[#8390fa] bg-[#eef0ff] font-bold text-[#1d2f6f]" : "border-transparent text-[#232f3e] hover:bg-[#f2f3f3]"}`;
@@ -74,6 +81,14 @@ export function DashboardLayout() {
           <NavLink to="/iotroot/dashboard/devices" className={navClass}>
             <Icon devices />
             Devices
+          </NavLink>
+          <NavLink to="/iotroot/dashboard/data" className={navClass}>
+            <Icon data />
+            Stored data
+          </NavLink>
+          <NavLink to="/iotroot/dashboard/usage" className={navClass}>
+            <Icon usage />
+            Usage
           </NavLink>
           <NavLink to="/iotroot/dashboard/settings" className={navClass}>
             <Icon settings />

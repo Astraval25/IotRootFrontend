@@ -10,6 +10,9 @@ import { DashboardDevicesPage } from '../features/dashboard/pages/DashboardDevic
 import { DashboardDevicePage } from '../features/dashboard/pages/DashboardDevicePage'
 import { DashboardOverviewPage } from '../features/dashboard/pages/DashboardOverviewPage'
 import { DashboardSettingsPage } from '../features/dashboard/pages/DashboardSettingsPage'
+import { DashboardStoredDataPage } from '../features/dashboard/pages/DashboardStoredDataPage'
+import { DashboardTopicDataPage } from '../features/dashboard/pages/DashboardTopicDataPage'
+import { DashboardUsagePage } from '../features/dashboard/pages/DashboardUsagePage'
 import { WorkspaceProvider } from '../features/dashboard/realtime/WorkspaceProvider'
 import { WaitlistPage } from '../features/waitlist/pages/WaitlistPage'
 
@@ -35,6 +38,9 @@ export function AppRouter() {
           <Route path="devices" element={<DashboardDevicesPage />} />
           <Route path="devices/:deviceId" element={<DashboardDevicePage />} />
           <Route path="devices/:deviceId/topics" element={<DashboardDevicePage />} />
+          <Route path="devices/:deviceId/topics/:topicId/data" element={<DashboardTopicDataPage />} />
+          <Route path="data" element={<DashboardStoredDataPage />} />
+          <Route path="usage" element={<DashboardUsagePage />} />
           <Route path="settings" element={<DashboardSettingsPage />} />
           <Route path="topics" element={<Navigate to="/iotroot/dashboard/devices" replace />} />
           <Route path="*" element={<Navigate to="/iotroot/dashboard" replace />} />

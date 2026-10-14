@@ -12,7 +12,9 @@ export function TopicCommands({ device, topic }) {
   const [publishTopic, setPublishTopic] = useState(
     /[+#]/.test(topic.topic) ? "" : topic.topic,
   );
-  const [message, setMessage] = useState("hello");
+  const [message, setMessage] = useState(
+    topic.topicType === "STORE" ? '{"value":1}' : "hello",
+  );
   const [copiedCommand, setCopiedCommand] = useState("");
   const [copyError, setCopyError] = useState("");
   const status = deviceStatuses[String(device.id)];
@@ -113,12 +115,17 @@ export function TopicCommands({ device, topic }) {
         )}
         {canPublish && (
           <label className="col-span-full" htmlFor="publish-message">
-            Message
+            {topic.topicType === "STORE" ? "JSON message" : "Message"}
             <input
               id="publish-message"
               value={message}
               onChange={(event) => setMessage(event.target.value)}
             />
+            {topic.topicType === "STORE" && (
+              <small className="font-normal text-slate-500">
+                Stored topics accept valid JSON payloads up to 1 MB.
+              </small>
+            )}
           </label>
         )}
       </div>
