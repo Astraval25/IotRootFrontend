@@ -31,6 +31,20 @@ test('shell quotes preserve apostrophes and shell metacharacters as literal cred
   assert.equal(quoteShellArgument('space "quote" \\ path'), "'space \"quote\" \\ path'")
 })
 
+test('Windows Command Prompt escapes user-entered JSON for mosquitto', () => {
+  assert.equal(quoteShellArgument('{"value":1}', 'cmd'), '{\\"value\\":1}')
+
+  const command = buildTopicCommands({
+    ...options,
+    shell: 'cmd',
+    rule: { topic: '/iot/store/4/status', permission: 'publish', topicType: 'STORE' },
+    publishTopic: '/iot/store/4/status',
+    message: '{"value":42}',
+  })[0].command
+
+  assert.match(command, /-t \/iot\/store\/4\/status -m \{\\"value\\":42\} -q 1$/)
+})
+
 test('simple MQTT values use the same unquoted command format on every platform', () => {
   const commandOptions = {
     device: { username: 'app1', clientId: 'ae119da9-f012-48c7-8497-6d9f78da999d' },

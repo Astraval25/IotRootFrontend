@@ -7,6 +7,14 @@ export function quoteShellArgument(value, shell = 'bash') {
     return text
   }
 
+  if (shell === 'cmd') {
+    const escapedQuotes = text.replaceAll('"', '\\"')
+    // Compact JSON and other whitespace-free values can be passed directly to
+    // mosquitto on Windows CMD while retaining their literal double quotes.
+    if (!/[\s&|<>^()%!]/.test(text)) return escapedQuotes
+    return `"${escapedQuotes}"`
+  }
+
   return shell === 'powershell' ? `'${text.replaceAll("'", "''")}'` : `'${text.replaceAll("'", "'\\''")}'`
 }
 

@@ -3,12 +3,18 @@ import { API_BASE_URL } from "../../../shared/config/env";
 import { useWorkspace } from "../realtime/useWorkspace";
 import { buildTopicCommands, matchesTopicFilter } from "../mqttCommands";
 
+function defaultShell() {
+  return typeof navigator !== "undefined" && /Windows/i.test(navigator.userAgent)
+    ? "cmd"
+    : "bash";
+}
+
 export function TopicCommands({ device, topic }) {
   const { deviceStatuses, store } = useWorkspace();
   const [password, setPassword] = useState(() =>
     store.getDevicePassword(device.id),
   );
-  const [shell, setShell] = useState("bash");
+  const [shell, setShell] = useState(defaultShell);
   const [publishTopic, setPublishTopic] = useState(
     /[+#]/.test(topic.topic) ? "" : topic.topic,
   );
@@ -93,6 +99,7 @@ export function TopicCommands({ device, topic }) {
             value={shell}
             onChange={(event) => setShell(event.target.value)}
           >
+            <option value="cmd">Windows Command Prompt</option>
             <option value="bash">Bash / Linux / macOS</option>
             <option value="powershell">PowerShell 7+</option>
           </select>
