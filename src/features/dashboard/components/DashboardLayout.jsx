@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useWorkspace } from "../realtime/useWorkspace";
 
 function Icon({ devices = false, settings = false, data = false, usage = false }) {
@@ -45,7 +46,24 @@ function Icon({ devices = false, settings = false, data = false, usage = false }
 }
 
 export function DashboardLayout() {
-  const { statusStream } = useWorkspace();
+  const { statusStream, devices, topics, store } = useWorkspace();
+  const [search, setSearch] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => { if (search.trim()) store.loadTopics() }, [search, store]);
+  const searchResults = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return [];
+    const deviceRows = (devices ?? []).filter(device => [device.username, device.clientId, device.mountpoint].some(value => String(value ?? "").toLowerCase().includes(term))).map(device => ({ key: `device-${device.id}`, type: "Device", label: device.username, detail: device.clientId, to: `/iotroot/dashboard/devices/${device.id}` }));
+    const topicRows = (topics ?? []).filter(topic => topic.topic.toLowerCase().includes(term) || (topic.topicType === "STORE" && ["https", "api"].some(value => value.includes(term)))).flatMap(topic => {
+      const device = devices?.find(item => String(item.id) === String(topic.deviceId));
+      const rows = [{ key: `topic-${topic.deviceId}-${topic.id}`, type: "Topic", label: topic.topic, detail: device?.username, to: `/iotroot/dashboard/devices/${topic.deviceId}/topics` }];
+      if (topic.topicType === "STORE") rows.push({ key: `api-${topic.deviceId}-${topic.id}`, type: "HTTPS API", label: topic.topic, detail: device?.username, to: `/iotroot/dashboard/data#https-api-${topic.id}` });
+      return rows;
+    });
+    return [...deviceRows, ...topicRows].slice(0, 10);
+  }, [devices, topics, search]);
+  function selectResult(result) { setSearch(""); setSearchOpen(false); navigate(result.to); }
   const navClass = ({ isActive }) =>
     `flex min-h-9 items-center gap-2.5 border-l-4 px-4 py-2 text-[13px] no-underline ${isActive ? "border-[#8390fa] bg-[#eef0ff] font-bold text-[#1d2f6f]" : "border-transparent text-[#232f3e] hover:bg-[#f2f3f3]"}`;
   return (
@@ -59,9 +77,10 @@ export function DashboardLayout() {
           IoTRoot
         </NavLink>
         <div className="flex items-center gap-[7px] border-l border-white/25 pl-4 font-semibold max-[760px]:hidden"><i className="size-2.5 rounded-sm border-2 border-[#fac748]" aria-hidden="true" /> IoT Console</div>
-        <div className="mr-auto flex h-[26px] w-[min(450px,42vw)] items-center gap-2 border border-[#8390fa] bg-[#17265b] px-[9px] text-[#dce0ff] max-[760px]:hidden" aria-label="Console search">
+        <div className="relative mr-auto flex h-[26px] w-[min(450px,42vw)] items-center gap-2 border border-[#8390fa] bg-[#17265b] px-[9px] text-[#dce0ff] max-[760px]:hidden" role="search">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
-          <span>Search devices and services</span>
+          <input className="min-w-0 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-[#dce0ff]" type="search" value={search} placeholder="Search devices, topics, and HTTPS APIs" aria-label="Search devices, topics, and HTTPS APIs" onFocus={() => setSearchOpen(true)} onBlur={() => setTimeout(() => setSearchOpen(false), 150)} onChange={event => { setSearch(event.target.value); setSearchOpen(true) }} onKeyDown={event => { if (event.key === "Enter" && searchResults[0]) selectResult(searchResults[0]) }} />
+          {searchOpen && search.trim() && <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 max-h-80 overflow-y-auto border border-slate-300 bg-white text-slate-800 shadow-xl">{searchResults.map(result => <button type="button" className="flex w-full items-center gap-3 border-b border-slate-100 px-3 py-2.5 text-left hover:bg-[#eef0ff]" key={result.key} onMouseDown={() => selectResult(result)}><span className="w-16 shrink-0 text-[10px] font-bold uppercase text-[#8390fa]">{result.type}</span><span className="min-w-0"><strong className="block truncate text-xs">{result.label}</strong>{result.detail && <small className="block truncate text-[10px] text-slate-500">{result.detail}</small>}</span></button>)}{!searchResults.length && <p className="m-0 px-3 py-4 text-xs text-slate-500">No matching devices, topics, or HTTPS APIs.</p>}</div>}
           <kbd>⌘ K</kbd>
         </div>
         <div className="flex items-center gap-3.5 max-[760px]:ml-auto">

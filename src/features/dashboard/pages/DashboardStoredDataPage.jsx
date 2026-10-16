@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchStoredMessages } from '../api/storedDataApi'
 import { useWorkspace } from '../realtime/useWorkspace'
+import { API_BASE_URL } from '../../../shared/config/env'
 
 const fieldClass = 'min-h-10 rounded border border-slate-300 bg-white px-3 text-sm outline-none focus:border-[#8390fa]'
 
@@ -13,12 +14,14 @@ function formatPayload(payload) {
 }
 
 export function DashboardStoredDataPage() {
-  const { devices } = useWorkspace()
+  const { devices, topics, store } = useWorkspace()
   const [filters, setFilters] = useState({ deviceId: '', topicPrefix: '', from: '', to: '' })
   const [query, setQuery] = useState({ page: 0 })
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  useEffect(() => { store.loadTopics() }, [store])
 
   useEffect(() => {
     let active = true
@@ -56,10 +59,23 @@ export function DashboardStoredDataPage() {
   }
 
   const content = result?.content ?? []
+  const httpsApis = (topics ?? []).filter(topic => topic.topicType === 'STORE').map(topic => ({
+    ...topic,
+    device: devices?.find(device => String(device.id) === String(topic.deviceId)),
+    endpoint: `${API_BASE_URL}/api/v1/store/messages?deviceId=${topic.deviceId}&topic=${encodeURIComponent(topic.topic)}`,
+  }))
 
   return (
     <section className="grid min-h-full content-start gap-6 bg-[#f2f3f3] p-6 max-sm:p-4">
       <header><h1 className="m-0 text-2xl font-semibold tracking-tight text-[#1d2f6f]">Stored data</h1><p className="mt-1.5 text-[13px] text-slate-500">JSON messages published to your <code>/iot/store/user/…</code> topics. The default view covers the last hour.</p></header>
+
+      <article className="border border-[#d5dbdb] bg-white shadow-sm">
+        <header className="border-b border-[#eaeded] px-5 py-4"><h2 className="m-0 text-base font-semibold">HTTPS APIs</h2><p className="mt-1 text-xs text-slate-500">Every stored topic can be read using its HTTPS endpoint and an API key.</p></header>
+        <div className="grid gap-3 p-5">
+          {httpsApis.map(api => <section className="rounded border border-slate-200 p-4" id={`https-api-${api.id}`} key={`${api.deviceId}-${api.id}`}><div className="flex flex-wrap items-center justify-between gap-2"><div><strong className="text-sm">{api.device?.username ?? `Device #${api.deviceId}`}</strong><code className="ml-3 break-all text-xs text-[#1d2f6f]">{api.topic}</code></div><span className="rounded bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700">GET</span></div><pre className="mt-3 overflow-x-auto whitespace-pre-wrap break-all rounded bg-[#17265b] p-3 text-xs text-white"><code>{`curl -H "X-API-Key: YOUR_API_KEY" "${api.endpoint}"`}</code></pre></section>)}
+          {!httpsApis.length && <p className="m-0 py-5 text-center text-sm text-slate-500">No stored topics are configured yet.</p>}
+        </div>
+      </article>
 
       <form className="grid grid-cols-4 items-end gap-4 border border-[#d5dbdb] bg-white p-5 shadow-sm max-[1050px]:grid-cols-2 max-sm:grid-cols-1" onSubmit={submit}>
         <label className="grid gap-2 text-xs font-semibold">Device<select className={fieldClass} value={filters.deviceId} onChange={event => setFilters(current => ({ ...current, deviceId: event.target.value }))}><option value="">All devices</option>{(devices ?? []).map(device => <option value={device.id} key={device.id}>{device.username}</option>)}</select></label>

@@ -41,16 +41,15 @@ export function ApiKeysSettings() {
     }
   }
 
-  async function revoke(key) {
-    if (busy || key.revokedAt) return
+  async function remove(key) {
+    if (busy || !window.confirm(`Delete API key "${key.name}"? Applications using it will stop working immediately.`)) return
     setBusy(true)
     setError('')
     try {
       await revokeApiKey(key.id)
-      const revokedAt = new Date().toISOString()
-      setKeys(current => current.map(item => item.id === key.id ? { ...item, revokedAt } : item))
+      setKeys(current => current.filter(item => item.id !== key.id))
     } catch (err) {
-      setError(err.message || 'Could not revoke API key.')
+      setError(err.message || 'Could not delete API key.')
     } finally {
       setBusy(false)
     }
@@ -85,9 +84,9 @@ export function ApiKeysSettings() {
       <article className="overflow-hidden border border-[#d5dbdb] bg-white shadow-sm">
         <header className="border-b border-[#eaeded] px-5 py-[18px]"><h3 className="m-0 text-[17px] font-semibold">API keys</h3></header>
         {error && <p className="m-5 border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-        <div className="overflow-x-auto"><table className="w-full min-w-[620px] text-left text-sm"><thead><tr className="bg-[#eef0ff] text-[11px] uppercase text-[#1d2f6f]"><th className="px-5 py-3">Name</th><th className="px-5 py-3">Prefix</th><th className="px-5 py-3">Last used</th><th className="px-5 py-3">Status</th><th className="px-5 py-3">Action</th></tr></thead><tbody>
-          {keys.map(key => <tr className="border-t border-slate-200" key={key.id}><td className="px-5 py-4 font-medium">{key.name}</td><td className="px-5 py-4 font-mono text-xs">{key.prefix}…</td><td className="px-5 py-4 text-xs text-slate-500">{formatDate(key.lastUsedAt)}</td><td className="px-5 py-4"><span className={`rounded px-2 py-1 text-xs ${key.revokedAt ? 'bg-slate-100 text-slate-500' : 'bg-emerald-50 text-emerald-700'}`}>{key.revokedAt ? 'Revoked' : 'Active'}</span></td><td className="px-5 py-4"><button type="button" className="text-xs font-semibold text-red-700 disabled:text-slate-400" disabled={busy || Boolean(key.revokedAt)} onClick={() => revoke(key)}>Revoke</button></td></tr>)}
-          {!keys.length && <tr><td className="px-5 py-10 text-center text-sm text-slate-500" colSpan="5">{loading ? 'Loading API keys…' : 'No API keys yet.'}</td></tr>}
+        <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left text-sm"><thead><tr className="bg-[#eef0ff] text-[11px] uppercase text-[#1d2f6f]"><th className="px-5 py-3">Name</th><th className="px-5 py-3">Prefix</th><th className="px-5 py-3">Last used</th><th className="px-5 py-3">Successful</th><th className="px-5 py-3">Failed</th><th className="px-5 py-3">Action</th></tr></thead><tbody>
+          {keys.map(key => <tr className="border-t border-slate-200" key={key.id}><td className="px-5 py-4 font-medium">{key.name}</td><td className="px-5 py-4 font-mono text-xs">{key.prefix}…</td><td className="px-5 py-4 text-xs text-slate-500">{formatDate(key.lastUsedAt)}</td><td className="px-5 py-4 font-semibold text-emerald-700">{key.successfulRequests ?? 0}</td><td className="px-5 py-4 font-semibold text-red-700">{key.failedRequests ?? 0}</td><td className="px-5 py-4"><button type="button" className="text-xs font-semibold text-red-700 disabled:text-slate-400" disabled={busy} onClick={() => remove(key)}>Delete</button></td></tr>)}
+          {!keys.length && <tr><td className="px-5 py-10 text-center text-sm text-slate-500" colSpan="6">{loading ? 'Loading API keys…' : 'No API keys yet.'}</td></tr>}
         </tbody></table></div>
       </article>
     </div>

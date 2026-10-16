@@ -78,16 +78,20 @@ export function DashboardUsagePage() {
   const maximum = Math.max(inbound, outbound, stored, 1)
   const totalTraffic = inbound + outbound
   const transactions = Number(usage?.totalTransactions ?? ((usage?.inboundMessages ?? 0) + (usage?.outboundMessages ?? 0)))
+  const successfulHttps = Number(usage?.successfulHttpsRequests ?? 0)
+  const failedHttps = Number(usage?.failedHttpsRequests ?? 0)
+  const totalHttps = successfulHttps + failedHttps
 
   return <section className="grid min-h-full content-start gap-6 bg-[#f2f3f3] p-6 max-sm:p-4">
     <header className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="m-0 text-2xl font-semibold tracking-tight text-[#1d2f6f]">Usage</h1><p className="mt-1.5 text-[13px] text-slate-500">All recorded account traffic, stored JSON data, transactions, and device totals for billing.</p></div><button type="button" className="rounded bg-[#1d2f6f] px-4 py-2 text-sm font-semibold text-white hover:bg-[#8390fa] disabled:cursor-wait disabled:opacity-60" onClick={refresh} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh usage'}</button></header>
     {error && <p className="m-0 border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-    <div className="grid grid-cols-5 gap-4 max-[1200px]:grid-cols-3 max-[800px]:grid-cols-2 max-sm:grid-cols-1">
+    <div className="grid grid-cols-6 gap-4 max-[1200px]:grid-cols-3 max-[800px]:grid-cols-2 max-sm:grid-cols-1">
       <MetricCard label="Devices" value={usage?.deviceCount ?? '—'} detail="Currently created devices" tone="slate" />
       <MetricCard label="Inbound" value={formatBytes(inbound)} detail={`${formatCount(usage?.inboundMessages)} published messages`} />
       <MetricCard label="Outbound" value={formatBytes(outbound)} detail={`${formatCount(usage?.outboundMessages)} delivered messages`} tone="amber" />
       <MetricCard label="Transactions" value={formatCount(transactions)} detail={`${formatCount(usage?.inboundMessages)} inbound + ${formatCount(usage?.outboundMessages)} outbound`} tone="slate" />
       <MetricCard label="Stored JSON" value={formatBytes(stored)} detail={`${formatCount(usage?.storedMessageCount)} stored messages`} tone="emerald" />
+      <MetricCard label="HTTPS calls" value={formatCount(totalHttps)} detail={`${formatCount(successfulHttps)} successful · ${formatCount(failedHttps)} failed`} tone={failedHttps ? 'amber' : 'emerald'} />
     </div>
     <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(280px,.6fr)] gap-5 max-[900px]:grid-cols-1">
       <article className="border border-[#d5dbdb] bg-white p-5 shadow-sm"><header className="mb-6"><h2 className="m-0 text-base font-semibold">Usage comparison</h2><p className="mt-1 text-xs text-slate-500">Estimated MQTT traffic includes payload, topic bytes, and protocol overhead. Stored data is JSON payload size.</p></header><div className="grid gap-6"><UsageBar label="Inbound traffic" value={inbound} maximum={maximum} color="bg-[#8390fa]" detail={`${formatBytes(usage?.inboundPayloadBytes)} payload across ${formatCount(usage?.inboundMessages)} publishes`} /><UsageBar label="Outbound traffic" value={outbound} maximum={maximum} color="bg-[#fac748]" detail={`${formatBytes(usage?.outboundPayloadBytes)} payload across ${formatCount(usage?.outboundMessages)} deliveries`} /><UsageBar label="Stored data" value={stored} maximum={maximum} color="bg-emerald-500" detail={`${formatCount(usage?.storedMessageCount)} JSON records persisted`} /></div></article>

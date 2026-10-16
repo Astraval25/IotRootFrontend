@@ -44,6 +44,8 @@ export function TopicCommands({ device, topic }) {
     publishTopic,
     message,
   });
+  const httpsEndpoint = `${API_BASE_URL}/api/v1/store/messages?deviceId=${device.id}&topic=${encodeURIComponent(topic.topic)}`;
+  const httpsCommand = `curl -H "X-API-Key: YOUR_API_KEY" "${httpsEndpoint}"`;
 
   async function copy(command) {
     try {
@@ -179,6 +181,13 @@ export function TopicCommands({ device, topic }) {
           </pre>
         </section>
       ))}
+      {topic.topicType === "STORE" && (
+        <section className="rounded border border-emerald-200 bg-emerald-50 p-4">
+          <header className="flex items-center justify-between gap-4"><h4 className="m-0 text-sm font-semibold text-emerald-900">Read stored data over HTTPS</h4><button type="button" className="rounded border border-emerald-300 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800" onClick={() => copy(httpsCommand)}>{copiedCommand === httpsCommand ? "Copied" : "Copy curl command"}</button></header>
+          <pre className="mt-4 overflow-x-auto whitespace-pre-wrap break-all rounded bg-[#17265b] p-4 text-xs leading-6 text-white"><code>{httpsCommand}</code></pre>
+          <p className="mb-0 mt-2 text-xs text-emerald-800">Create an API key in Settings, then replace YOUR_API_KEY.</p>
+        </section>
+      )}
       {copiedCommand &&
         commands.some((item) => item.command === copiedCommand) && (
           <span role="status" className="sr-only">
