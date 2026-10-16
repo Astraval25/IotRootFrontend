@@ -1,4 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { useLayoutEffect } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ForgotPasswordPage } from '../features/auth/pages/ForgotPasswordPage'
 import { LoginPage } from '../features/auth/pages/LoginPage'
@@ -8,6 +9,7 @@ import { VerifyOtpPage } from '../features/auth/pages/VerifyOtpPage'
 import { DashboardLayout } from '../features/dashboard/components/DashboardLayout'
 import { DashboardDevicesPage } from '../features/dashboard/pages/DashboardDevicesPage'
 import { DashboardDevicePage } from '../features/dashboard/pages/DashboardDevicePage'
+import { DashboardGettingStartedPage } from '../features/dashboard/pages/DashboardGettingStartedPage'
 import { DashboardOverviewPage } from '../features/dashboard/pages/DashboardOverviewPage'
 import { DashboardSettingsPage } from '../features/dashboard/pages/DashboardSettingsPage'
 import { DashboardStoredDataPage } from '../features/dashboard/pages/DashboardStoredDataPage'
@@ -16,9 +18,20 @@ import { DashboardUsagePage } from '../features/dashboard/pages/DashboardUsagePa
 import { WorkspaceProvider } from '../features/dashboard/realtime/WorkspaceProvider'
 import { WaitlistPage } from '../features/waitlist/pages/WaitlistPage'
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [pathname])
+
+  return null
+}
+
 export function AppRouter() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<WaitlistPage />} />
         <Route path="/iotroot/login" element={<LoginPage />} />
@@ -35,6 +48,7 @@ export function AppRouter() {
           }
         >
           <Route index element={<DashboardOverviewPage />} />
+          <Route path="getting-started" element={<DashboardGettingStartedPage />} />
           <Route path="devices" element={<DashboardDevicesPage />} />
           <Route path="devices/:deviceId" element={<DashboardDevicePage />} />
           <Route path="devices/:deviceId/topics" element={<DashboardDevicePage />} />

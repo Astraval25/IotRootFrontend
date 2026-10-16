@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useWorkspace } from "../realtime/useWorkspace";
 
-function Icon({ devices = false, settings = false, data = false, usage = false }) {
+function Icon({ devices = false, settings = false, data = false, usage = false, guide = false }) {
   return (
     <svg
       width="20"
@@ -13,7 +13,12 @@ function Icon({ devices = false, settings = false, data = false, usage = false }
       strokeWidth="1.6"
       aria-hidden="true"
     >
-      {usage ? (
+      {guide ? (
+        <>
+          <path d="M5 4.5h9.5A2.5 2.5 0 0 1 17 7v13H7a2 2 0 0 1-2-2V4.5Z" />
+          <path d="M7 20a2 2 0 0 1 2-2h8M9 8h4m-4 4h5" />
+        </>
+      ) : usage ? (
         <>
           <path d="M4 20V10m6 10V4m6 16v-7m4 7H2" />
         </>
@@ -96,6 +101,10 @@ export function DashboardLayout() {
           <NavLink to="/iotroot/dashboard" end className={navClass}>
             <Icon />
             Overview
+          </NavLink>
+          <NavLink to="/iotroot/dashboard/getting-started" className={navClass}>
+            <Icon guide />
+            Getting started
           </NavLink>
           <NavLink to="/iotroot/dashboard/devices" className={navClass}>
             <Icon devices />
